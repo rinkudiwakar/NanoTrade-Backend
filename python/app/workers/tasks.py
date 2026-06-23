@@ -11,6 +11,7 @@ from app.core.logger import get_logger
 
 logger = get_logger(__name__)
 
+
 @celery_app.task
 def run_fx_converter():
     """
@@ -36,13 +37,19 @@ def run_fx_converter():
                     logger.warning("[FX] INR rate key missing in API response")
             else:
                 consecutive_failures += 1
-                logger.warning(f"[FX] API request failed | status={resp.status_code} failures={consecutive_failures}")
+                logger.warning(
+                    f"[FX] API request failed | status={resp.status_code} failures={consecutive_failures}"
+                )
         except Exception as e:
             consecutive_failures += 1
-            logger.error(f"[FX] Error fetching exchange rate | error={e} failures={consecutive_failures}", exc_info=True)
+            logger.error(
+                f"[FX] Error fetching exchange rate | error={e} failures={consecutive_failures}",
+                exc_info=True,
+            )
 
         logger.debug("[FX] Sleeping 10s before next FX update")
         time.sleep(10)
+
 
 @celery_app.task
 def run_binance_feed():
@@ -81,9 +88,13 @@ def run_binance_feed():
                     tick_count += 1
                     # Log every 50 ticks to avoid flooding (Binance sends ~2 ticks/sec)
                     if tick_count % 50 == 1:
-                        logger.info(f"[Binance] Price tick | usd={usd_price} rate={rate} inr={reference_price_inr} ticks={tick_count}")
+                        logger.info(
+                            f"[Binance] Price tick | usd={usd_price} rate={rate} inr={reference_price_inr} ticks={tick_count}"
+                        )
                     else:
-                        logger.debug(f"[Binance] Tick | usd={usd_price} inr={reference_price_inr}")
+                        logger.debug(
+                            f"[Binance] Tick | usd={usd_price} inr={reference_price_inr}"
+                        )
 
                     # Publish price update event to Redis
                     price_event = {
@@ -91,9 +102,9 @@ def run_binance_feed():
                         "data": {
                             "binance_price_usd": usd_price,
                             "usd_inr_rate": rate,
-                            "reference_price_inr": reference_price_inr
+                            "reference_price_inr": reference_price_inr,
                         },
-                        "timestamp": int(time.time() * 1000)
+                        "timestamp": int(time.time() * 1000),
                     }
                     r.publish("price", json.dumps(price_event))
 
@@ -102,6 +113,7 @@ def run_binance_feed():
         asyncio.run(listen())
     except Exception as e:
         logger.error(f"[Binance] Feed terminated with error | error={e}", exc_info=True)
+
 
 @celery_app.task
 def run_market_simulator():
@@ -124,7 +136,9 @@ def run_market_simulator():
     tick_count = 0
 
     if not simulator_secret:
-        logger.error("[Simulator] SIMULATOR_SECRET not set in .env — simulator will not run")
+        logger.error(
+            "[Simulator] SIMULATOR_SECRET not set in .env — simulator will not run"
+        )
         return
 
     logger.info(f"[Simulator] Targeting FastAPI at {api_url}")
@@ -134,16 +148,22 @@ def run_market_simulator():
         price_str = r.get(settings.REDIS_KEY_REFERENCE_PRICE)
         if not price_str:
             reference_price = 5594500.0  # Fallback: ~67,000 USD * 83.5 INR/USD
-            logger.warning(f"[Simulator] No reference price in Redis — using fallback ₹{reference_price:,.2f}")
+            logger.warning(
+                f"[Simulator] No reference price in Redis — using fallback ₹{reference_price:,.2f}"
+            )
         else:
             reference_price = float(price_str)
 
         # 2. Generate orders via simulator service (all trader types handled inside)
         try:
             orders_to_place = generate_simulator_orders(reference_price)
-            logger.debug(f"[Simulator] Generated {len(orders_to_place)} order(s) | ref_price=₹{reference_price:,.2f}")
+            logger.debug(
+                f"[Simulator] Generated {len(orders_to_place)} order(s) | ref_price=₹{reference_price:,.2f}"
+            )
         except Exception as e:
-            logger.error(f"[Simulator] Order generation error | error={e}", exc_info=True)
+            logger.error(
+                f"[Simulator] Order generation error | error={e}", exc_info=True
+            )
             time.sleep(1.0)
             continue
 
@@ -153,27 +173,38 @@ def run_market_simulator():
                 payload = {
                     "side": order.side,
                     "price": order.price,
-                    "quantity": order.quantity
+                    "quantity": order.quantity,
                 }
                 resp = requests.post(
                     api_url,
                     json=payload,
                     headers={"X-Simulator-Secret": simulator_secret},
-                    timeout=2
+                    timeout=2,
                 )
                 if resp.status_code == 200:
                     tick_count += 1
                     # Log every 20 orders to avoid flood
                     if tick_count % 20 == 1:
-                        logger.info(f"[Simulator] Order submitted | {order.side} {order.quantity:.6f} BTC @ ₹{order.price:.2f} tick={tick_count}")
+                        logger.info(
+                            f"[Simulator] Order submitted | {order.side} {order.quantity:.6f} BTC @ ₹{order.price:.2f} tick={tick_count}"
+                        )
                     else:
-                        logger.debug(f"[Simulator] {order.side} {order.quantity:.6f} BTC @ ₹{order.price:.2f}")
+                        logger.debug(
+                            f"[Simulator] {order.side} {order.quantity:.6f} BTC @ ₹{order.price:.2f}"
+                        )
                 else:
-                    logger.warning(f"[Simulator] Order rejected | status={resp.status_code} body={resp.text[:120]}")
+                    logger.warning(
+                        f"[Simulator] Order rejected | status={resp.status_code} body={resp.text[:120]}"
+                    )
             except requests.exceptions.ConnectionError:
-                logger.error("[Simulator] Cannot connect to FastAPI — is the server running?")
+                logger.error(
+                    "[Simulator] Cannot connect to FastAPI — is the server running?"
+                )
             except Exception as e:
-                logger.error(f"[Simulator] Unexpected error submitting order | error={e}", exc_info=True)
+                logger.error(
+                    f"[Simulator] Unexpected error submitting order | error={e}",
+                    exc_info=True,
+                )
 
         # 4. Random sleep between ticks (0.2s – 1.5s mimics realistic order flow)
         sleep_time = random.uniform(0.2, 1.5)

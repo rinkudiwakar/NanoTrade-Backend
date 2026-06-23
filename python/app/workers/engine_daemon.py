@@ -1,12 +1,13 @@
 import asyncio
 import json
-import logging
 from datetime import datetime, timezone
 import sys
 import os
 
 # Add build directory to path to import _nanotrade_ext
-build_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "build"))
+build_dir = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..", "..", "..", "build")
+)
 if build_dir not in sys.path:
     sys.path.append(build_dir)
 
@@ -25,6 +26,7 @@ STREAM_KEY = "engine:orders_stream"
 GROUP_NAME = "engine_group"
 CONSUMER_NAME = "worker-1"
 DLQ_STREAM = "engine:dead_letter_queue"
+
 
 class EngineDaemon:
     def __init__(self):
@@ -46,25 +48,41 @@ class EngineDaemon:
         Reconstructs the exact order book state from the database.
         """
         logger.info("Hydrating Matching Engine from database...")
-        
+
         # Revert any stuck PROCESSING orders to QUEUED
         # This handles crash recovery safely
-        processing_resp = supabase.table("orders").select("id").eq("status", "PROCESSING").execute()
+        processing_resp = (
+            supabase.table("orders").select("id").eq("status", "PROCESSING").execute()
+        )
         if processing_resp.data:
             stuck_ids = [row["id"] for row in processing_resp.data]
-            logger.warning(f"Found {len(stuck_ids)} orders stuck in PROCESSING. Reverting to QUEUED.")
+            logger.warning(
+                f"Found {len(stuck_ids)} orders stuck in PROCESSING. Reverting to QUEUED."
+            )
             for oid in stuck_ids:
-                supabase.table("orders").update({"status": "QUEUED"}).eq("id", oid).execute()
+                supabase.table("orders").update({"status": "QUEUED"}).eq(
+                    "id", oid
+                ).execute()
 
         # Fetch active orders to rebuild the book
-        resp = supabase.table("orders").select("*").in_("status", ["NEW", "PARTIALLY_FILLED"]).order("created_at", desc=False).execute()
+        resp = (
+            supabase.table("orders")
+            .select("*")
+            .in_("status", ["NEW", "PARTIALLY_FILLED"])
+            .order("created_at", desc=False)
+            .execute()
+        )
         orders = resp.data if resp.data else []
-        
+
         logger.info(f"Found {len(orders)} active orders to hydrate.")
         for o in orders:
             cpp_quantity = int(float(o["quantity"]) * 1_000_000)
-            order_type = _nanotrade_ext.OrderType.BUY if o["side"] == "BUY" else _nanotrade_ext.OrderType.SELL
-            
+            order_type = (
+                _nanotrade_ext.OrderType.BUY
+                if o["side"] == "BUY"
+                else _nanotrade_ext.OrderType.SELL
+            )
+
             # Use original creation timestamp
             ts_obj = datetime.fromisoformat(o["created_at"].replace("Z", "+00:00"))
             ts_ms = int(ts_obj.timestamp() * 1000)
@@ -76,14 +94,14 @@ class EngineDaemon:
                 cpp_quantity,
                 ts_ms,
                 o["user_id"],
-                not o["is_bot"]
+                not o["is_bot"],
             )
-            
+
             # Process in engine silently (no DB updates during hydration)
-            # Since these are already NEW or PARTIALLY_FILLED, they shouldn't match against each other 
+            # Since these are already NEW or PARTIALLY_FILLED, they shouldn't match against each other
             # if the previous state was consistent. If they do match, it means the DB was inconsistent.
             self.engine.process_order(cpp_order)
-            
+
         logger.info("Hydration complete.")
         await self.publish_orderbook()
 
@@ -96,34 +114,50 @@ class EngineDaemon:
                     for entry in parsed[side]:
                         if "quantity" in entry:
                             entry["quantity"] = entry["quantity"] / 1_000_000
-            
+
             await self.redis.set("engine:orderbook", json.dumps(parsed))
-            await self.redis.publish("orderbook", json.dumps({
-                "type": "orderbook",
-                "data": parsed,
-                "timestamp": int(datetime.now().timestamp() * 1000)
-            }))
+            await self.redis.publish(
+                "orderbook",
+                json.dumps(
+                    {
+                        "type": "orderbook",
+                        "data": parsed,
+                        "timestamp": int(datetime.now().timestamp() * 1000),
+                    }
+                ),
+            )
         except Exception as e:
             logger.error(f"Failed to publish orderbook: {e}")
 
     async def run(self):
         await self.init_stream()
         await self.hydrate_engine()
-        
+
         logger.info("Starting order consumption loop...")
         while True:
             try:
                 # Block for up to 1 second
-                messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
-                
+                messages = await self.redis.xreadgroup(
+                    GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000
+                )
+
                 if not messages:
                     # Periodically check for pending messages (crash recovery from PEL)
                     pending = await self.redis.xpending(STREAM_KEY, GROUP_NAME)
                     if pending and pending["pending"] > 0:
                         # Claim messages idle for > 10 seconds
-                        claimed = await self.redis.xautoclaim(STREAM_KEY, GROUP_NAME, CONSUMER_NAME, min_idle_time=10000, start_id="0-0", count=10)
+                        claimed = await self.redis.xautoclaim(
+                            STREAM_KEY,
+                            GROUP_NAME,
+                            CONSUMER_NAME,
+                            min_idle_time=10000,
+                            start_id="0-0",
+                            count=10,
+                        )
                         if claimed and claimed[1]:
-                            logger.info(f"Claimed {len(claimed[1])} pending messages from crashed workers")
+                            logger.info(
+                                f"Claimed {len(claimed[1])} pending messages from crashed workers"
+                            )
                             await self.process_messages(claimed[1])
                     continue
 
@@ -137,25 +171,29 @@ class EngineDaemon:
     async def process_messages(self, messages):
         for msg_id, data in messages:
             order_id = data.get("order_id")
-            
+
             try:
                 # 1. Update state to PROCESSING
-                supabase.table("orders").update({"status": "PROCESSING"}).eq("id", order_id).execute()
-                
+                supabase.table("orders").update({"status": "PROCESSING"}).eq(
+                    "id", order_id
+                ).execute()
+
                 # 2. Process Order
                 await self.execute_order(data)
-                
+
                 # 3. Acknowledge message
                 await self.redis.xack(STREAM_KEY, GROUP_NAME, msg_id)
                 logger.info(f"Successfully processed and ACKed msg_id={msg_id}")
-                
+
             except Exception as e:
                 logger.error(f"Failed to process order {order_id}: {e}", exc_info=True)
                 # Implement DLQ logic
                 retries = await self.redis.hincrby(f"retries:{msg_id}", "count", 1)
                 if retries >= 3:
                     logger.critical(f"Order {order_id} failed 3 times. Moving to DLQ.")
-                    supabase.table("orders").update({"status": "FAILED"}).eq("id", order_id).execute()
+                    supabase.table("orders").update({"status": "FAILED"}).eq(
+                        "id", order_id
+                    ).execute()
                     await self.redis.xadd(DLQ_STREAM, data)
                     await self.redis.xack(STREAM_KEY, GROUP_NAME, msg_id)
                 else:
@@ -171,8 +209,12 @@ class EngineDaemon:
         timestamp_ms = int(data["timestamp"])
 
         cpp_quantity = int(quantity * 1_000_000)
-        order_type = _nanotrade_ext.OrderType.BUY if side == "BUY" else _nanotrade_ext.OrderType.SELL
-        
+        order_type = (
+            _nanotrade_ext.OrderType.BUY
+            if side == "BUY"
+            else _nanotrade_ext.OrderType.SELL
+        )
+
         cpp_order = _nanotrade_ext.Order(
             order_id, order_type, price, cpp_quantity, timestamp_ms, user_id, is_user
         )
@@ -184,13 +226,17 @@ class EngineDaemon:
         # Handle trades
         for t in result.trades:
             unscaled_trade_qty = t.quantity / 1_000_000
-            is_bot_trade = (t.buyer_id == "00000000-0000-0000-0000-000000000000" or
-                            t.seller_id == "00000000-0000-0000-0000-000000000000")
-            
+            is_bot_trade = (
+                t.buyer_id == "00000000-0000-0000-0000-000000000000"
+                or t.seller_id == "00000000-0000-0000-0000-000000000000"
+            )
+
             # Atomic settlement via RPC
             # Ensure trade_id is treated as string
-            trade_ts = datetime.fromtimestamp(t.timestamp / 1000.0, tz=timezone.utc).isoformat()
-            
+            trade_ts = datetime.fromtimestamp(
+                t.timestamp / 1000.0, tz=timezone.utc
+            ).isoformat()
+
             rpc_payload = {
                 "p_trade_id": t.trade_id,
                 "p_buyer_id": t.buyer_id,
@@ -200,35 +246,52 @@ class EngineDaemon:
                 "p_buy_order_id": t.buy_order_id,
                 "p_sell_order_id": t.sell_order_id,
                 "p_is_bot_trade": is_bot_trade,
-                "p_trade_timestamp": trade_ts
+                "p_trade_timestamp": trade_ts,
             }
-            
-            rpc_res = supabase.rpc("settle_trade_atomic", rpc_payload).execute()
-            
+
+            supabase.rpc("settle_trade_atomic", rpc_payload).execute()
+
             # Update matched maker order quantity manually since RPC doesn't do it
             matched_order_id = t.sell_order_id if side == "BUY" else t.buy_order_id
-            maker_db = supabase.table("orders").select("quantity").eq("id", matched_order_id).execute()
+            maker_db = (
+                supabase.table("orders")
+                .select("quantity")
+                .eq("id", matched_order_id)
+                .execute()
+            )
             if maker_db.data:
                 maker_qty = float(maker_db.data[0]["quantity"])
                 new_maker_qty = max(0.0, maker_qty - unscaled_trade_qty)
                 maker_status = "FILLED" if new_maker_qty < 1e-6 else "PARTIALLY_FILLED"
-                supabase.table("orders").update({"quantity": new_maker_qty, "status": maker_status}).eq("id", matched_order_id).execute()
+                supabase.table("orders").update(
+                    {"quantity": new_maker_qty, "status": maker_status}
+                ).eq("id", matched_order_id).execute()
 
             # Publish trade to Redis
             trade_dict = {
-                "trade_id": t.trade_id, "buy_order_id": t.buy_order_id, "sell_order_id": t.sell_order_id,
-                "price": t.price, "quantity": unscaled_trade_qty, "timestamp": t.timestamp,
-                "buyer_id": t.buyer_id, "seller_id": t.seller_id
+                "trade_id": t.trade_id,
+                "buy_order_id": t.buy_order_id,
+                "sell_order_id": t.sell_order_id,
+                "price": t.price,
+                "quantity": unscaled_trade_qty,
+                "timestamp": t.timestamp,
+                "buyer_id": t.buyer_id,
+                "seller_id": t.seller_id,
             }
-            await self.redis.publish("trade", json.dumps({"type": "trade", "data": trade_dict, "timestamp": timestamp_ms}))
+            await self.redis.publish(
+                "trade",
+                json.dumps(
+                    {"type": "trade", "data": trade_dict, "timestamp": timestamp_ms}
+                ),
+            )
 
         # Update taker order status
-        supabase.table("orders").update({
-            "quantity": unscaled_rem_qty,
-            "status": result.fill_status
-        }).eq("id", order_id).execute()
+        supabase.table("orders").update(
+            {"quantity": unscaled_rem_qty, "status": result.fill_status}
+        ).eq("id", order_id).execute()
 
         await self.publish_orderbook()
+
 
 if __name__ == "__main__":
     daemon = EngineDaemon()

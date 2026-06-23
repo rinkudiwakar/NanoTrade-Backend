@@ -14,18 +14,20 @@ Architecture rules:
 
 import random
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import List
 
 
 # ---------------------------------------------------------------------------
 # Trader Personality Types  (PRD Section 3.3)
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class SimulatorOrder:
     """Represents a single order to be submitted by the simulator."""
-    side: str        # "BUY" or "SELL"
-    price: float     # INR, 2 decimal precision
+
+    side: str  # "BUY" or "SELL"
+    price: float  # INR, 2 decimal precision
     quantity: float  # BTC, 6 decimal precision
 
 
@@ -86,7 +88,7 @@ def _whale_order(reference_price: float) -> List[SimulatorOrder]:
     Whale trader: large size, larger spread impact. Rare — 5% probability.
     Can cause significant price movement within the engine.
     """
-    spread = random.uniform(0.005, 0.015)   # 0.5% – 1.5%
+    spread = random.uniform(0.005, 0.015)  # 0.5% – 1.5%
     side = random.choice(["BUY", "SELL"])
     quantity = round(random.uniform(1.5, 5.0), 6)
 
@@ -126,6 +128,7 @@ def _cluster_orders(reference_price: float) -> List[SimulatorOrder]:
 # ---------------------------------------------------------------------------
 # Main entry point: generate_simulator_orders()
 # ---------------------------------------------------------------------------
+
 
 def generate_simulator_orders(reference_price: float) -> List[SimulatorOrder]:
     """

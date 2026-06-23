@@ -16,6 +16,7 @@ from datetime import datetime
 # Profile (maps to `profiles` table)
 # ---------------------------------------------------------------------------
 
+
 class ProfileModel(BaseModel):
     id: str
     balance: float = Field(..., description="Virtual INR balance")
@@ -25,6 +26,7 @@ class ProfileModel(BaseModel):
 # ---------------------------------------------------------------------------
 # Order (maps to `orders` table)
 # ---------------------------------------------------------------------------
+
 
 class OrderModel(BaseModel):
     id: str
@@ -42,6 +44,7 @@ class OrderModel(BaseModel):
 # Trade (maps to `trades` table)
 # ---------------------------------------------------------------------------
 
+
 class TradeModel(BaseModel):
     id: str
     buyer_id: str
@@ -56,6 +59,7 @@ class TradeModel(BaseModel):
 # Portfolio holding (maps to `portfolios` table)
 # ---------------------------------------------------------------------------
 
+
 class PortfolioHoldingModel(BaseModel):
     user_id: str
     asset: str = Field(default="BTC")
@@ -66,6 +70,7 @@ class PortfolioHoldingModel(BaseModel):
 # ---------------------------------------------------------------------------
 # Composite response models (used by API routes)
 # ---------------------------------------------------------------------------
+
 
 class PortfolioResponse(BaseModel):
     user_id: str

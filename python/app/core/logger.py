@@ -21,7 +21,6 @@ Usage in any module:
 
 import logging
 import logging.handlers
-import os
 import sys
 import json
 from pathlib import Path
@@ -31,12 +30,12 @@ from pathlib import Path
 # ANSI color codes for terminal
 # ─────────────────────────────────────────────────────────────────
 _COLORS = {
-    "DEBUG":    "\033[90m",   # Grey
-    "INFO":     "\033[36m",   # Cyan
-    "WARNING":  "\033[33m",   # Yellow
-    "ERROR":    "\033[31m",   # Red
-    "CRITICAL": "\033[35m",   # Magenta
-    "RESET":    "\033[0m",
+    "DEBUG": "\033[90m",  # Grey
+    "INFO": "\033[36m",  # Cyan
+    "WARNING": "\033[33m",  # Yellow
+    "ERROR": "\033[31m",  # Red
+    "CRITICAL": "\033[35m",  # Magenta
+    "RESET": "\033[0m",
 }
 
 
@@ -61,22 +60,42 @@ class ColoredFormatter(logging.Formatter):
 
         # Attach any "extra" context fields to the message
         extras = {
-            k: v for k, v in record.__dict__.items()
+            k: v
+            for k, v in record.__dict__.items()
             if k not in logging.LogRecord.__dict__
-            and k not in ("message", "asctime", "args", "exc_info",
-                          "exc_text", "stack_info", "msg", "name",
-                          "levelname", "levelno", "pathname", "filename",
-                          "module", "lineno", "funcName", "created",
-                          "msecs", "relativeCreated", "thread",
-                          "threadName", "processName", "process",
-                          "taskName")
+            and k
+            not in (
+                "message",
+                "asctime",
+                "args",
+                "exc_info",
+                "exc_text",
+                "stack_info",
+                "msg",
+                "name",
+                "levelname",
+                "levelno",
+                "pathname",
+                "filename",
+                "module",
+                "lineno",
+                "funcName",
+                "created",
+                "msecs",
+                "relativeCreated",
+                "thread",
+                "threadName",
+                "processName",
+                "process",
+                "taskName",
+            )
         }
         if extras:
             extras_str = "  " + "  ".join(f"{k}={v}" for k, v in extras.items())
             record.msg = str(record.msg) + extras_str
 
-        color  = _COLORS.get(record.levelname, "")
-        reset  = _COLORS["RESET"]
+        color = _COLORS.get(record.levelname, "")
+        reset = _COLORS["RESET"]
         return color + super().format(record) + reset
 
 
@@ -94,15 +113,35 @@ class PlainFormatter(logging.Formatter):
         record.asctime = self.formatTime(record, self.datefmt) + f".{ms:03d}"
 
         extras = {
-            k: v for k, v in record.__dict__.items()
+            k: v
+            for k, v in record.__dict__.items()
             if k not in logging.LogRecord.__dict__
-            and k not in ("message", "asctime", "args", "exc_info",
-                          "exc_text", "stack_info", "msg", "name",
-                          "levelname", "levelno", "pathname", "filename",
-                          "module", "lineno", "funcName", "created",
-                          "msecs", "relativeCreated", "thread",
-                          "threadName", "processName", "process",
-                          "taskName")
+            and k
+            not in (
+                "message",
+                "asctime",
+                "args",
+                "exc_info",
+                "exc_text",
+                "stack_info",
+                "msg",
+                "name",
+                "levelname",
+                "levelno",
+                "pathname",
+                "filename",
+                "module",
+                "lineno",
+                "funcName",
+                "created",
+                "msecs",
+                "relativeCreated",
+                "thread",
+                "threadName",
+                "processName",
+                "process",
+                "taskName",
+            )
         }
         if extras:
             extras_str = "  " + "  ".join(f"{k}={v}" for k, v in extras.items())
@@ -118,12 +157,12 @@ class JsonFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
         ms = int((record.created - int(record.created)) * 1000)
         asctime = self.formatTime(record, "%Y-%m-%dT%H:%M:%S") + f".{ms:03d}Z"
-        
+
         log_obj = {
             "timestamp": asctime,
             "level": record.levelname,
             "component": record.name,
-            "message": record.getMessage()
+            "message": record.getMessage(),
         }
 
         # Include standard exception info if present
@@ -132,15 +171,35 @@ class JsonFormatter(logging.Formatter):
 
         # Include extra context fields
         extras = {
-            k: v for k, v in record.__dict__.items()
+            k: v
+            for k, v in record.__dict__.items()
             if k not in logging.LogRecord.__dict__
-            and k not in ("message", "asctime", "args", "exc_info",
-                          "exc_text", "stack_info", "msg", "name",
-                          "levelname", "levelno", "pathname", "filename",
-                          "module", "lineno", "funcName", "created",
-                          "msecs", "relativeCreated", "thread",
-                          "threadName", "processName", "process",
-                          "taskName")
+            and k
+            not in (
+                "message",
+                "asctime",
+                "args",
+                "exc_info",
+                "exc_text",
+                "stack_info",
+                "msg",
+                "name",
+                "levelname",
+                "levelno",
+                "pathname",
+                "filename",
+                "module",
+                "lineno",
+                "funcName",
+                "created",
+                "msecs",
+                "relativeCreated",
+                "thread",
+                "threadName",
+                "processName",
+                "process",
+                "taskName",
+            )
         }
         if extras:
             log_obj.update(extras)
@@ -152,6 +211,7 @@ class JsonFormatter(logging.Formatter):
 # Setup — called ONCE at app startup
 # ─────────────────────────────────────────────────────────────────
 _initialized = False
+
 
 def setup_logging(log_level: str = "DEBUG", log_dir: str = "logs") -> None:
     """
@@ -187,9 +247,9 @@ def setup_logging(log_level: str = "DEBUG", log_dir: str = "logs") -> None:
     # ── Rotating file handler (Plain Text) ────────────────────────
     file_handler = logging.handlers.RotatingFileHandler(
         filename=str(log_file),
-        maxBytes=10 * 1024 * 1024,   # 10 MB
+        maxBytes=10 * 1024 * 1024,  # 10 MB
         backupCount=5,
-        encoding="utf-8"
+        encoding="utf-8",
     )
     file_handler.setLevel(numeric_level)
     file_handler.setFormatter(PlainFormatter())
@@ -199,9 +259,9 @@ def setup_logging(log_level: str = "DEBUG", log_dir: str = "logs") -> None:
     json_log_file = log_path / "nanotrade.json.log"
     json_file_handler = logging.handlers.RotatingFileHandler(
         filename=str(json_log_file),
-        maxBytes=10 * 1024 * 1024,   # 10 MB
+        maxBytes=10 * 1024 * 1024,  # 10 MB
         backupCount=5,
-        encoding="utf-8"
+        encoding="utf-8",
     )
     json_file_handler.setLevel(numeric_level)
     json_file_handler.setFormatter(JsonFormatter())
@@ -215,8 +275,7 @@ def setup_logging(log_level: str = "DEBUG", log_dir: str = "logs") -> None:
     logging.getLogger("uvicorn.error").setLevel(logging.INFO)
 
     root.info(
-        f"Logging initialized | level={log_level.upper()} "
-        f"file={log_file.resolve()}"
+        f"Logging initialized | level={log_level.upper()} " f"file={log_file.resolve()}"
     )
 
 

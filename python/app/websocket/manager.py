@@ -15,12 +15,16 @@ class ConnectionManager:
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         self.active_connections.append(websocket)
-        logger.info(f"[WS] Client connected | total={len(self.active_connections)} client={websocket.client}")
+        logger.info(
+            f"[WS] Client connected | total={len(self.active_connections)} client={websocket.client}"
+        )
 
     def disconnect(self, websocket: WebSocket):
         if websocket in self.active_connections:
             self.active_connections.remove(websocket)
-            logger.info(f"[WS] Client disconnected | total={len(self.active_connections)} client={websocket.client}")
+            logger.info(
+                f"[WS] Client disconnected | total={len(self.active_connections)} client={websocket.client}"
+            )
 
     async def send_personal_message(self, message: str, websocket: WebSocket):
         await websocket.send_text(message)
@@ -35,17 +39,23 @@ class ConnectionManager:
             try:
                 await connection.send_text(message)
             except Exception as e:
-                logger.warning(f"[WS] Failed to send to client | client={connection.client} error={e}")
+                logger.warning(
+                    f"[WS] Failed to send to client | client={connection.client} error={e}"
+                )
                 dead.append(connection)
 
         # Clean up dead connections
         for conn in dead:
             if conn in self.active_connections:
                 self.active_connections.remove(conn)
-                logger.info(f"[WS] Removed dead connection | remaining={len(self.active_connections)}")
+                logger.info(
+                    f"[WS] Removed dead connection | remaining={len(self.active_connections)}"
+                )
 
         if self.active_connections:
-            logger.debug(f"[WS] Broadcast complete | clients={len(self.active_connections)} payload_len={len(message)}")
+            logger.debug(
+                f"[WS] Broadcast complete | clients={len(self.active_connections)} payload_len={len(message)}"
+            )
 
 
 manager = ConnectionManager()
@@ -68,7 +78,9 @@ async def redis_pubsub_listener(connection_manager: ConnectionManager):
         r = None
         pubsub = None
         try:
-            logger.debug(f"[PubSub] Connecting to Redis | url={settings.REDIS_URL} attempt={reconnect_count + 1}")
+            logger.debug(
+                f"[PubSub] Connecting to Redis | url={settings.REDIS_URL} attempt={reconnect_count + 1}"
+            )
             r = redis.from_url(
                 settings.REDIS_URL,
                 decode_responses=True,
@@ -79,25 +91,30 @@ async def redis_pubsub_listener(connection_manager: ConnectionManager):
             pubsub = r.pubsub()
             await pubsub.subscribe(*CHANNELS)
             reconnect_count += 1
-            logger.info(f"[PubSub] Subscribed to Redis channels | channels={CHANNELS} reconnect_count={reconnect_count}")
+            logger.info(
+                f"[PubSub] Subscribed to Redis channels | channels={CHANNELS} reconnect_count={reconnect_count}"
+            )
 
             # Poll for messages — avoids blocking listen() socket timeout errors
             while True:
                 try:
                     message = await pubsub.get_message(
-                        ignore_subscribe_messages=True,
-                        timeout=1.0
+                        ignore_subscribe_messages=True, timeout=1.0
                     )
                     if message and message.get("type") == "message":
-                        data    = message.get("data")
+                        data = message.get("data")
                         channel = message.get("channel", "?")
                         if data:
                             total_messages += 1
-                            logger.debug(f"[PubSub] Message received | channel={channel} len={len(data)} total={total_messages}")
+                            logger.debug(
+                                f"[PubSub] Message received | channel={channel} len={len(data)} total={total_messages}"
+                            )
                             try:
                                 await connection_manager.broadcast(data)
                             except Exception as e:
-                                logger.warning(f"[PubSub] Broadcast error | channel={channel} error={e}")
+                                logger.warning(
+                                    f"[PubSub] Broadcast error | channel={channel} error={e}"
+                                )
                     else:
                         # No message this tick — yield control briefly
                         await asyncio.sleep(0.05)
@@ -105,15 +122,22 @@ async def redis_pubsub_listener(connection_manager: ConnectionManager):
                 except asyncio.CancelledError:
                     raise  # Propagate to outer try for clean shutdown
                 except Exception as e:
-                    logger.error(f"[PubSub] get_message error | error={e}", exc_info=True)
+                    logger.error(
+                        f"[PubSub] get_message error | error={e}", exc_info=True
+                    )
                     break  # Break inner loop to trigger reconnect
 
         except asyncio.CancelledError:
-            logger.info(f"[PubSub] Listener cancelled — shutting down cleanly | messages_processed={total_messages}")
+            logger.info(
+                f"[PubSub] Listener cancelled — shutting down cleanly | messages_processed={total_messages}"
+            )
             break  # Exit the outer while loop
 
         except Exception as e:
-            logger.error(f"[PubSub] Connection error | error={e} retrying_in={RETRY_DELAY}s", exc_info=True)
+            logger.error(
+                f"[PubSub] Connection error | error={e} retrying_in={RETRY_DELAY}s",
+                exc_info=True,
+            )
             await asyncio.sleep(RETRY_DELAY)
 
         finally:

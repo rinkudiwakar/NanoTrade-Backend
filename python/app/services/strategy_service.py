@@ -22,20 +22,20 @@ called from a Celery periodic task, not directly from API routes.
 """
 
 from __future__ import annotations
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 from enum import Enum
-import time
 
 
 # ---------------------------------------------------------------------------
 # Strategy Types & Config
 # ---------------------------------------------------------------------------
 
+
 class StrategyType(str, Enum):
-    SIMPLE_MA     = "simple_ma"          # Simple moving average crossover
-    MEAN_REVERSION = "mean_reversion"    # Buy low / sell high around reference
-    MOMENTUM      = "momentum"           # Follow the trend
+    SIMPLE_MA = "simple_ma"  # Simple moving average crossover
+    MEAN_REVERSION = "mean_reversion"  # Buy low / sell high around reference
+    MOMENTUM = "momentum"  # Follow the trend
 
 
 @dataclass
@@ -44,21 +44,22 @@ class StrategyConfig:
     Configuration for a user's active strategy.
     Stored/fetched from Supabase (strategy config table — future).
     """
+
     strategy_type: StrategyType
     user_id: str
     asset: str = "BTC"
-    
+
     # Common parameters
-    order_quantity: float = 0.01       # BTC per signal, 6 decimal max
-    max_open_orders: int = 3           # Safety cap on open simultaneous orders
-    
+    order_quantity: float = 0.01  # BTC per signal, 6 decimal max
+    max_open_orders: int = 3  # Safety cap on open simultaneous orders
+
     # SMA-specific
-    short_window: int = 5              # Number of price ticks for short MA
-    long_window: int = 20             # Number of price ticks for long MA
-    
+    short_window: int = 5  # Number of price ticks for short MA
+    long_window: int = 20  # Number of price ticks for long MA
+
     # Mean reversion-specific
-    deviation_pct: float = 0.005       # Buy if price is 0.5% below reference
-    
+    deviation_pct: float = 0.005  # Buy if price is 0.5% below reference
+
     # Momentum-specific
     momentum_threshold: float = 0.003  # 0.3% move triggers momentum trade
 
@@ -66,10 +67,11 @@ class StrategyConfig:
 @dataclass
 class StrategySignal:
     """Result from strategy evaluation — what action to take."""
+
     should_trade: bool
-    side: Optional[str] = None         # "BUY" or "SELL"
-    price: Optional[float] = None      # Limit price in INR
-    quantity: Optional[float] = None   # BTC quantity
+    side: Optional[str] = None  # "BUY" or "SELL"
+    price: Optional[float] = None  # Limit price in INR
+    quantity: Optional[float] = None  # BTC quantity
     reason: str = ""
 
 
@@ -102,6 +104,7 @@ def get_price_history() -> list[float]:
 # Strategy Evaluators
 # ---------------------------------------------------------------------------
 
+
 def _evaluate_simple_ma(config: StrategyConfig, prices: list[float]) -> StrategySignal:
     """
     Simple Moving Average crossover strategy.
@@ -109,18 +112,22 @@ def _evaluate_simple_ma(config: StrategyConfig, prices: list[float]) -> Strategy
     SELL when short MA crosses below long MA.
     """
     if len(prices) < config.long_window:
-        return StrategySignal(should_trade=False, reason="Not enough price history for SMA")
+        return StrategySignal(
+            should_trade=False, reason="Not enough price history for SMA"
+        )
 
-    short_ma = sum(prices[-config.short_window:]) / config.short_window
-    long_ma  = sum(prices[-config.long_window:])  / config.long_window
+    short_ma = sum(prices[-config.short_window :]) / config.short_window
+    long_ma = sum(prices[-config.long_window :]) / config.long_window
 
     # Previous crossover state (one tick ago)
     prev_prices = prices[:-1]
     if len(prev_prices) < config.long_window:
-        return StrategySignal(should_trade=False, reason="Not enough history for previous tick")
+        return StrategySignal(
+            should_trade=False, reason="Not enough history for previous tick"
+        )
 
-    prev_short = sum(prev_prices[-config.short_window:]) / config.short_window
-    prev_long  = sum(prev_prices[-config.long_window:])  / config.long_window
+    prev_short = sum(prev_prices[-config.short_window :]) / config.short_window
+    prev_long = sum(prev_prices[-config.long_window :]) / config.long_window
 
     current_price = prices[-1]
 
@@ -131,7 +138,7 @@ def _evaluate_simple_ma(config: StrategyConfig, prices: list[float]) -> Strategy
             side="BUY",
             price=round(current_price * 1.001, 2),  # Slightly above to fill
             quantity=round(config.order_quantity, 6),
-            reason=f"SMA bullish crossover: short={short_ma:.0f} > long={long_ma:.0f}"
+            reason=f"SMA bullish crossover: short={short_ma:.0f} > long={long_ma:.0f}",
         )
 
     # Bearish crossover: short MA crossed below long MA
@@ -141,16 +148,14 @@ def _evaluate_simple_ma(config: StrategyConfig, prices: list[float]) -> Strategy
             side="SELL",
             price=round(current_price * 0.999, 2),  # Slightly below to fill
             quantity=round(config.order_quantity, 6),
-            reason=f"SMA bearish crossover: short={short_ma:.0f} < long={long_ma:.0f}"
+            reason=f"SMA bearish crossover: short={short_ma:.0f} < long={long_ma:.0f}",
         )
 
     return StrategySignal(should_trade=False, reason="No SMA crossover signal")
 
 
 def _evaluate_mean_reversion(
-    config: StrategyConfig,
-    current_price: float,
-    reference_price: float
+    config: StrategyConfig, current_price: float, reference_price: float
 ) -> StrategySignal:
     """
     Mean Reversion strategy.
@@ -169,7 +174,7 @@ def _evaluate_mean_reversion(
             side="BUY",
             price=round(current_price * 1.0005, 2),
             quantity=round(config.order_quantity, 6),
-            reason=f"Mean reversion BUY: deviation={deviation:.4%}"
+            reason=f"Mean reversion BUY: deviation={deviation:.4%}",
         )
 
     # Price is well above reference → expect reversion down → SELL
@@ -179,10 +184,12 @@ def _evaluate_mean_reversion(
             side="SELL",
             price=round(current_price * 0.9995, 2),
             quantity=round(config.order_quantity, 6),
-            reason=f"Mean reversion SELL: deviation={deviation:.4%}"
+            reason=f"Mean reversion SELL: deviation={deviation:.4%}",
         )
 
-    return StrategySignal(should_trade=False, reason=f"Within reversion band: deviation={deviation:.4%}")
+    return StrategySignal(
+        should_trade=False, reason=f"Within reversion band: deviation={deviation:.4%}"
+    )
 
 
 def _evaluate_momentum(config: StrategyConfig, prices: list[float]) -> StrategySignal:
@@ -193,7 +200,9 @@ def _evaluate_momentum(config: StrategyConfig, prices: list[float]) -> StrategyS
     Looks at the last 2 ticks.
     """
     if len(prices) < 2:
-        return StrategySignal(should_trade=False, reason="Not enough price history for momentum")
+        return StrategySignal(
+            should_trade=False, reason="Not enough price history for momentum"
+        )
 
     current = prices[-1]
     prev = prices[-2]
@@ -205,7 +214,7 @@ def _evaluate_momentum(config: StrategyConfig, prices: list[float]) -> StrategyS
             side="BUY",
             price=round(current * 1.001, 2),
             quantity=round(config.order_quantity, 6),
-            reason=f"Momentum BUY: +{change_pct:.3%}"
+            reason=f"Momentum BUY: +{change_pct:.3%}",
         )
 
     if change_pct <= -config.momentum_threshold:
@@ -214,15 +223,18 @@ def _evaluate_momentum(config: StrategyConfig, prices: list[float]) -> StrategyS
             side="SELL",
             price=round(current * 0.999, 2),
             quantity=round(config.order_quantity, 6),
-            reason=f"Momentum SELL: {change_pct:.3%}"
+            reason=f"Momentum SELL: {change_pct:.3%}",
         )
 
-    return StrategySignal(should_trade=False, reason=f"Momentum below threshold: {change_pct:.3%}")
+    return StrategySignal(
+        should_trade=False, reason=f"Momentum below threshold: {change_pct:.3%}"
+    )
 
 
 # ---------------------------------------------------------------------------
 # Main Entry Point
 # ---------------------------------------------------------------------------
+
 
 def evaluate_strategy(
     config: StrategyConfig,
@@ -251,4 +263,6 @@ def evaluate_strategy(
     elif config.strategy_type == StrategyType.MOMENTUM:
         return _evaluate_momentum(config, prices)
 
-    return StrategySignal(should_trade=False, reason=f"Unknown strategy: {config.strategy_type}")
+    return StrategySignal(
+        should_trade=False, reason=f"Unknown strategy: {config.strategy_type}"
+    )

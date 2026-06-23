@@ -19,18 +19,17 @@ if os.path.exists(ENV_PATH):
     load_dotenv(dotenv_path=ENV_PATH)
 
 
-
-
 # =========================
 # SETTINGS CLASS
 # =========================
 
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=ENV_PATH,            # 🔥 absolute path
+        env_file=ENV_PATH,  # 🔥 absolute path
         env_file_encoding="utf-8",
         case_sensitive=True,
-        extra="ignore"
+        extra="ignore",
     )
 
     # ── Project ─────────────────────────────
@@ -70,6 +69,7 @@ class Settings(BaseSettings):
 # 🔒 SECURITY CHECK
 # =========================
 
+
 def _assert_required_secrets(s: "Settings") -> None:
     if os.getenv("CI") == "true":
         return  # 🔥 skip strict checks in CI
@@ -82,9 +82,8 @@ def _assert_required_secrets(s: "Settings") -> None:
 
     for name, value in checks.items():
         if not value or value.strip() == "":
-            raise RuntimeError(
-                f"[Security] {name} is not configured."
-            )
+            raise RuntimeError(f"[Security] {name} is not configured.")
+
 
 # =========================
 # INIT SETTINGS

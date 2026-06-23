@@ -25,21 +25,18 @@ def verify_jwt(token: str) -> dict:
                 token,
                 settings.SUPABASE_JWT_SECRET,
                 algorithms=["HS256"],
-                options={"verify_aud": False}  # Supabase aud is 'authenticated'
+                options={"verify_aud": False},  # Supabase aud is 'authenticated'
             )
         else:
             # For modern/asymmetric projects (ES256), verify using public key fetched from JWKS
             logger.debug(f"Verifying JWT with {alg} (JWKS public key)")
             signing_key = jwk_client.get_signing_key_from_jwt(token)
             payload = jwt.decode(
-                token,
-                signing_key.key,
-                algorithms=[alg],
-                options={"verify_aud": False}
+                token, signing_key.key, algorithms=[alg], options={"verify_aud": False}
             )
 
         user_id = payload.get("sub", "unknown")
-        role    = payload.get("role", "unknown")
+        role = payload.get("role", "unknown")
         logger.debug(f"JWT verified OK | user_id={user_id} role={role} alg={alg}")
         return payload
 

@@ -41,13 +41,13 @@ def _verify_simulator_secret(x_simulator_secret: str = Header(default="")) -> No
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail={
                 "error": "Simulator endpoint is disabled. Set SIMULATOR_SECRET in .env.",
-                "code": "SIMULATOR_DISABLED"
-            }
+                "code": "SIMULATOR_DISABLED",
+            },
         )
     if x_simulator_secret != expected:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail={"error": "Invalid simulator secret.", "code": "FORBIDDEN"}
+            detail={"error": "Invalid simulator secret.", "code": "FORBIDDEN"},
         )
 
 
@@ -55,13 +55,13 @@ def _verify_simulator_secret(x_simulator_secret: str = Header(default="")) -> No
 async def create_user_order(
     order_in: OrderCreate,
     current_user: dict = Depends(get_current_user),
-    redis_client=Depends(get_redis_client)
+    redis_client=Depends(get_redis_client),
 ):
     user_id = current_user.get("sub")
     if not user_id:
         return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            content={"error": "User ID not found in token", "code": "UNAUTHORIZED"}
+            content={"error": "User ID not found in token", "code": "UNAUTHORIZED"},
         )
 
     try:
@@ -71,26 +71,28 @@ async def create_user_order(
             side=order_in.side,
             price=order_in.price,
             quantity=order_in.quantity,
-            redis_client=redis_client
+            redis_client=redis_client,
         )
         return result
     except ValueError as e:
         # Pre-execution funds / holdings validation error
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
-            content={"error": str(e), "code": "INSUFFICIENT_FUNDS_OR_HOLDINGS"}
+            content={"error": str(e), "code": "INSUFFICIENT_FUNDS_OR_HOLDINGS"},
         )
     except Exception as e:
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={"error": f"Order processing failed: {str(e)}", "code": "ORDER_PROCESSING_FAILED"}
+            content={
+                "error": f"Order processing failed: {str(e)}",
+                "code": "ORDER_PROCESSING_FAILED",
+            },
         )
 
 
 @router.post("/simulator", dependencies=[Depends(_verify_simulator_secret)])
 async def create_simulator_order(
-    order_in: OrderCreate,
-    redis_client=Depends(get_redis_client)
+    order_in: OrderCreate, redis_client=Depends(get_redis_client)
 ):
     """
     Internal-only endpoint for the Celery market simulator.
@@ -105,14 +107,18 @@ async def create_simulator_order(
             side=order_in.side,
             price=order_in.price,
             quantity=order_in.quantity,
-            redis_client=redis_client
+            redis_client=redis_client,
         )
         return result
     except Exception as e:
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={"error": f"Simulator order processing failed: {str(e)}", "code": "SIMULATOR_ORDER_FAILED"}
+            content={
+                "error": f"Simulator order processing failed: {str(e)}",
+                "code": "SIMULATOR_ORDER_FAILED",
+            },
         )
+
 
 @router.get("/history", dependencies=[Depends(check_rate_limit)])
 async def get_order_history(current_user: dict = Depends(get_current_user)):
@@ -120,10 +126,18 @@ async def get_order_history(current_user: dict = Depends(get_current_user)):
     user_id = current_user.get("sub")
     if not user_id:
         return JSONResponse(status_code=401, content={"error": "Unauthorized"})
-    
+
     from app.core.database import supabase
+
     try:
-        res = supabase.table("orders").select("*").eq("user_id", user_id).order("created_at", desc=True).limit(50).execute()
+        res = (
+            supabase.table("orders")
+            .select("*")
+            .eq("user_id", user_id)
+            .order("created_at", desc=True)
+            .limit(50)
+            .execute()
+        )
         return {"orders": res.data}
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})

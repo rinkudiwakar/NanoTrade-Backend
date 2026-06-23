@@ -34,7 +34,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 # Set CORS origins
@@ -57,10 +57,10 @@ else:
     )
 
 # Include routers
-app.include_router(auth.router,      prefix="/auth",      tags=["auth"])
-app.include_router(orders.router,    prefix="/orders",    tags=["orders"])
+app.include_router(auth.router, prefix="/auth", tags=["auth"])
+app.include_router(orders.router, prefix="/orders", tags=["orders"])
 app.include_router(portfolio.router, prefix="/portfolio", tags=["portfolio"])
-app.include_router(market.router,    prefix="/market",    tags=["market"])
+app.include_router(market.router, prefix="/market", tags=["market"])
 
 
 @app.websocket("/ws/market")

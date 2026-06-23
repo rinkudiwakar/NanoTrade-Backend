@@ -124,53 +124,37 @@ cd nanotrade
 
 ---
 
-### 2. Setup Backend
+### 2. Configure Environment
+
+Copy the example environment file and fill in your Supabase credentials:
 
 ```bash
-cd python
-pip install -r requirements.txt
+cp .env.example .env
 ```
+*(Update `SUPABASE_URL`, `SUPABASE_KEY`, and `SUPABASE_JWT_SECRET` in `.env`)*
 
 ---
 
-### 3. Build C++ Engine
+### 3. Run with Docker (Recommended)
+
+NanoTrade is fully containerized. You can launch the entire stack (API, Engine, Redis, Celery) with one command:
 
 ```bash
-cmake -B build -S .
-cmake --build build --config Release
+docker-compose up --build
 ```
-
----
-
-### 4. Run Backend
-
-```bash
-uvicorn app.main:app --reload
-```
-
----
-
-### 5. Start Redis
-
-```bash
-redis-server
-```
-
----
-
-### 6. Start Celery Worker
-
-```bash
-celery -A app.workers.celery_app worker --loglevel=info
-```
+*The API will be available at `http://localhost:8000`*
 
 ---
 
 ## 🧪 Testing
 
-* API testing via Postman / curl
-* WebSocket testing via browser
-* Simulator testing via Celery tasks
+* API testing via Postman / curl (See `API_DOCS.md`)
+* Run automated backend integration tests:
+  ```bash
+  python test_public_api.py
+  ```
+* Simulator testing via background Celery tasks
+
 
 ---
 
