@@ -1,0 +1,2 @@
+C:\MinGW\bin\ar.exe qc libutils.a CMakeFiles/utils.dir/src/utils/Logger.cpp.obj CMakeFiles/utils.dir/src/utils/Timer.cpp.obj
+C:\MinGW\bin\ranlib.exe libutils.a

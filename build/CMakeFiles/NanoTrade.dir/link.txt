@@ -1,0 +1,3 @@
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\NanoTrade.dir/objects.a
+C:\MinGW\bin\ar.exe qc CMakeFiles\NanoTrade.dir/objects.a @CMakeFiles\NanoTrade.dir\objects1.rsp
+C:\MinGW\bin\g++.exe -g -Wl,--whole-archive CMakeFiles\NanoTrade.dir/objects.a -Wl,--no-whole-archive -o NanoTrade.exe -Wl,--out-implib,libNanoTrade.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\NanoTrade.dir\linkLibs.rsp

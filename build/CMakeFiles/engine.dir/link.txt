@@ -1,0 +1,2 @@
+C:\MinGW\bin\ar.exe qc libengine.a CMakeFiles/engine.dir/src/engine/MatchingEngine.cpp.obj CMakeFiles/engine.dir/src/engine/OrderBook.cpp.obj
+C:\MinGW\bin\ranlib.exe libengine.a
