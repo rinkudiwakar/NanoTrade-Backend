@@ -7,8 +7,9 @@
 class Trade
 {
 public:
-  int buyOrderId;
-  int sellOrderId;
+  std::string trade_id;
+  std::string buyOrderId;
+  std::string sellOrderId;
   double price;
   int quantity;
   int64_t timestamp;
@@ -18,8 +19,9 @@ public:
   Trade() = default;
 
   // Constructor
-  Trade(int buyOrderId,
-        int sellOrderId,
+  Trade(std::string trade_id,
+        std::string buyOrderId,
+        std::string sellOrderId,
         double price,
         int quantity,
         int64_t timestamp,
@@ -33,6 +35,7 @@ public:
 inline void to_json(nlohmann::json &j, const Trade &trade)
 {
   j = nlohmann::json{
+      {"trade_id", trade.trade_id},
       {"buyOrderId", trade.buyOrderId},
       {"sellOrderId", trade.sellOrderId},
       {"price", trade.price},
@@ -41,4 +44,5 @@ inline void to_json(nlohmann::json &j, const Trade &trade)
       {"buyer_id", trade.buyer_id},
       {"seller_id", trade.seller_id}};
 }
+
 

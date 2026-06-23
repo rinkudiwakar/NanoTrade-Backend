@@ -12,10 +12,14 @@ class Settings(BaseSettings):
     
     # Redis Settings
     REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+    REDIS_KEY_USD_INR_RATE: str = "USD_INR_RATE"
+    REDIS_KEY_REFERENCE_PRICE: str = "REFERENCE_PRICE"
+    REDIS_KEY_LAST_TRADE_PRICE: str = "LAST_TRADE_PRICE"
     
     # Server Settings
     HOST: str = "127.0.0.1"
     PORT: int = 8000
+
     
     class Config:
         case_sensitive = True

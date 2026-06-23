@@ -36,7 +36,7 @@ static inline OrderType parseOrderType(const nlohmann::json &value)
 
 struct Order
 {
-  int order_id;
+  std::string order_id;
   OrderType type;
   double price;
   int quantity;
@@ -45,7 +45,7 @@ struct Order
   bool is_user;
 
   Order() = default;
-  Order(int order_id, OrderType type, double price, int quantity, int64_t timestamp, std::string user_id = "", bool is_user = false)
+  Order(std::string order_id, OrderType type, double price, int quantity, int64_t timestamp, std::string user_id = "", bool is_user = false)
       : order_id(order_id), type(type), price(price), quantity(quantity), timestamp(timestamp), user_id(user_id), is_user(is_user) {}
 
   bool isBuy() const { return type == OrderType::BUY; }
@@ -58,7 +58,7 @@ struct Order
 
   bool isValid() const
   {
-    return order_id > 0 && price > 0.0 && quantity > 0 && timestamp >= 0;
+    return !order_id.empty() && price > 0.0 && quantity > 0 && timestamp >= 0;
   }
 };
 
@@ -76,7 +76,7 @@ inline void to_json(nlohmann::json &j, const Order &order)
 
 inline void from_json(const nlohmann::json &j, Order &order)
 {
-  order.order_id = j.at("order_id").get<int>();
+  order.order_id = j.at("order_id").get<std::string>();
   order.type = parseOrderType(j.at("type"));
   order.price = j.at("price").get<double>();
   order.quantity = j.at("quantity").get<int>();
@@ -84,4 +84,5 @@ inline void from_json(const nlohmann::json &j, Order &order)
   order.user_id = j.value("user_id", "");
   order.is_user = j.value("is_user", false);
 }
+
 

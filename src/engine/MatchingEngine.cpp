@@ -1,6 +1,38 @@
 #include "engine/MatchingEngine.h"
 #include <algorithm>
-#include <ctime>
+#include <chrono>
+#include <random>
+#include <sstream>
+#include <iomanip>
+
+static std::string generateUuid()
+{
+  static std::random_device rd;
+  static std::mt19937 gen(rd());
+  static std::uniform_int_distribution<> dis(0, 15);
+  static std::uniform_int_distribution<> dis2(8, 11);
+
+  std::stringstream ss;
+  ss << std::hex;
+  for (int i = 0; i < 8; i++) ss << dis(gen);
+  ss << "-";
+  for (int i = 0; i < 4; i++) ss << dis(gen);
+  ss << "-4";
+  for (int i = 0; i < 3; i++) ss << dis(gen);
+  ss << "-";
+  ss << dis2(gen);
+  for (int i = 0; i < 3; i++) ss << dis(gen);
+  ss << "-";
+  for (int i = 0; i < 12; i++) ss << dis(gen);
+  return ss.str();
+}
+
+static int64_t currentTimestampMs()
+{
+  return std::chrono::duration_cast<std::chrono::milliseconds>(
+      std::chrono::system_clock::now().time_since_epoch()
+  ).count();
+}
 
 MatchingEngine::ProcessResult MatchingEngine::processOrder(const Order &order)
 {
@@ -21,9 +53,11 @@ MatchingEngine::ProcessResult MatchingEngine::processOrder(const Order &order)
         break;
 
       int tradedQty = std::min(remainingOrder.quantity, bestAsk.quantity);
-      int64_t tradeTimestamp = static_cast<int64_t>(std::time(nullptr));
+      int64_t tradeTimestamp = currentTimestampMs();
+      lastTradedPrice = bestAsk.price;
 
       result.trades.emplace_back(
+          generateUuid(),
           remainingOrder.order_id,
           bestAsk.order_id,
           bestAsk.price,
@@ -64,9 +98,11 @@ MatchingEngine::ProcessResult MatchingEngine::processOrder(const Order &order)
         break;
 
       int tradedQty = std::min(remainingOrder.quantity, bestBid.quantity);
-      int64_t tradeTimestamp = static_cast<int64_t>(std::time(nullptr));
+      int64_t tradeTimestamp = currentTimestampMs();
+      lastTradedPrice = bestBid.price;
 
       result.trades.emplace_back(
+          generateUuid(),
           bestBid.order_id,
           remainingOrder.order_id,
           bestBid.price,
@@ -107,7 +143,7 @@ MatchingEngine::ProcessResult MatchingEngine::processOrder(const Order &order)
   }
   else
   {
-    result.fillStatus = "PARTIAL";
+    result.fillStatus = "PARTIALLY_FILLED";
   }
 
   return result;
@@ -118,4 +154,11 @@ std::string MatchingEngine::getOrderBook() const
   std::lock_guard<std::mutex> lock(engineMutex);
   return orderBook.toJson().dump();
 }
+
+double MatchingEngine::getLastTradedPrice() const
+{
+  std::lock_guard<std::mutex> lock(engineMutex);
+  return lastTradedPrice;
+}
+
 

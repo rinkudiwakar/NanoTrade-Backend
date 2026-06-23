@@ -302,3 +302,107 @@ System should behave like:
 * If any design change occurs, update this file
 * Always document faults and fixes
 * Never bypass architecture rules
+
+
+## 17. PRICE SYSTEM DESIGN (CRITICAL – MUST FOLLOW)
+
+### 17.1 Binance Price Usage Rule
+
+* Binance price MUST NOT be used as the actual trading price.
+* It is ONLY used as a reference (anchor) for simulation.
+
+---
+
+### 17.2 Price Flow
+
+Correct flow:
+
+Binance (USD) → Currency Conversion → Reference Price (INR) → Simulator → Engine → Final Market Price
+
+---
+
+### 17.3 Currency Conversion (MANDATORY)
+
+Requirement:
+
+* Convert USD → INR in real-time
+* Use reliable exchange rate source (API or cached rate)
+
+---
+
+### 17.4 Implementation Requirement
+
+Backend must maintain:
+
+* current_usd_price (from Binance)
+* usd_inr_rate (from FX source)
+* reference_price_inr = usd_price × usd_inr_rate
+
+---
+
+### 17.5 Update Frequency
+
+* Binance price: real-time (WebSocket)
+* USD-INR rate: every 5–10 seconds (NOT per tick)
+
+---
+
+### 17.6 Simulator Rule
+
+* Simulator MUST generate orders around reference_price_inr
+* Must maintain spread:
+
+  BUY < reference_price < SELL
+
+---
+
+### 17.7 Engine Rule
+
+* Engine determines final price via trades
+* Engine price may deviate from reference price (allowed)
+
+---
+
+### 17.8 Frontend Rule
+
+* All prices displayed MUST be in INR
+* NEVER show USD to end user
+
+---
+
+### 17.9 Precision Rules
+
+* Price: 2 decimal places (₹)
+* Quantity: up to 6 decimals (BTC)
+
+---
+
+### 17.10 Fault Prevention
+
+DO NOT:
+
+* Use Binance price directly in UI
+* Convert currency inside frontend
+* Fetch exchange rate per request
+
+---
+
+### 17.11 Caching Strategy
+
+* Store USD-INR rate in Redis
+* Update periodically via Celery task
+
+---
+
+### 17.12 Example
+
+If:
+
+BTC = 67,000 USD
+USD-INR = 83
+
+Then:
+
+Reference Price = ₹55,61,000
+
+Simulator generates orders around this value.

@@ -16,7 +16,7 @@ PYBIND11_MODULE(_nanotrade_ext, m) {
   // Order class
   py::class_<Order>(m, "Order")
       .def(py::init<>())
-      .def(py::init<int, OrderType, double, int, int64_t, std::string, bool>(),
+      .def(py::init<std::string, OrderType, double, int, int64_t, std::string, bool>(),
            py::arg("order_id"), py::arg("type"), py::arg("price"), py::arg("quantity"),
            py::arg("timestamp"), py::arg("user_id") = "", py::arg("is_user") = false)
       .def_readwrite("order_id", &Order::order_id)
@@ -34,9 +34,10 @@ PYBIND11_MODULE(_nanotrade_ext, m) {
   // Trade class
   py::class_<Trade>(m, "Trade")
       .def(py::init<>())
-      .def(py::init<int, int, double, int, int64_t, std::string, std::string>(),
-           py::arg("buyOrderId"), py::arg("sellOrderId"), py::arg("price"), py::arg("quantity"),
-           py::arg("timestamp"), py::arg("buyer_id") = "", py::arg("seller_id") = "")
+      .def(py::init<std::string, std::string, std::string, double, int, int64_t, std::string, std::string>(),
+           py::arg("trade_id"), py::arg("buyOrderId"), py::arg("sellOrderId"), py::arg("price"),
+           py::arg("quantity"), py::arg("timestamp"), py::arg("buyer_id") = "", py::arg("seller_id") = "")
+      .def_readwrite("trade_id", &Trade::trade_id)
       .def_readwrite("buy_order_id", &Trade::buyOrderId)
       .def_readwrite("sell_order_id", &Trade::sellOrderId)
       .def_readwrite("price", &Trade::price)
@@ -57,6 +58,8 @@ PYBIND11_MODULE(_nanotrade_ext, m) {
   py::class_<MatchingEngine>(m, "MatchingEngine")
       .def(py::init<>())
       .def("process_order", &MatchingEngine::processOrder, py::arg("order"))
-      .def("get_order_book", &MatchingEngine::getOrderBook);
+      .def("get_order_book", &MatchingEngine::getOrderBook)
+      .def("get_last_traded_price", &MatchingEngine::getLastTradedPrice);
+
 }
 

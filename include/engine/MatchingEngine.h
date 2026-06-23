@@ -22,11 +22,17 @@ public:
 private:
   OrderBook orderBook;
   mutable std::mutex engineMutex;
+  double lastTradedPrice;
 
 public:
+  MatchingEngine() : lastTradedPrice(0.0) {}
+
   // Process one order and return trades plus remaining order if not filled
   ProcessResult processOrder(const Order &order);
 
   // Return the JSON serialized order book
   std::string getOrderBook() const;
+
+  // Get the last traded price
+  double getLastTradedPrice() const;
 };

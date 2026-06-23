@@ -36,29 +36,20 @@ async def redis_pubsub_listener(connection_manager: ConnectionManager):
     """
     r = redis.from_url(settings.REDIS_URL, decode_responses=True)
     pubsub = r.pubsub()
-    await pubsub.subscribe("trades", "orderbook")
+    await pubsub.subscribe("trade", "orderbook", "price", "user_update")
     
     try:
         async for message in pubsub.listen():
             if message and message.get("type") == "message":
-                channel = message.get("channel")
                 data = message.get("data")
-                
                 try:
-                    parsed_data = json.loads(data)
-                except Exception:
-                    parsed_data = data
-                
-                payload = {
-                    "event": channel, # e.g., "trades" or "orderbook"
-                    "data": parsed_data
-                }
-                
-                await connection_manager.broadcast(json.dumps(payload))
+                    await connection_manager.broadcast(data)
+                except Exception as e:
+                    print(f"Failed to broadcast WebSocket message: {e}")
     except asyncio.CancelledError:
         pass
     except Exception as e:
         print(f"WebSocket Redis listener encountered error: {e}")
     finally:
-        await pubsub.unsubscribe("trades", "orderbook")
+        await pubsub.unsubscribe("trade", "orderbook", "price", "user_update")
         await r.aclose()

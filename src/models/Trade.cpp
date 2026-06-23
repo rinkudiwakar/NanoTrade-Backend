@@ -1,14 +1,16 @@
 #include "models/Trade.h"
 #include <iostream>
 
-Trade::Trade(int buyOrderId,
-             int sellOrderId,
+Trade::Trade(std::string trade_id,
+             std::string buyOrderId,
+             std::string sellOrderId,
              double price,
              int quantity,
              int64_t timestamp,
              std::string buyer_id,
              std::string seller_id)
-    : buyOrderId(buyOrderId),
+    : trade_id(trade_id),
+      buyOrderId(buyOrderId),
       sellOrderId(sellOrderId),
       price(price),
       quantity(quantity),
