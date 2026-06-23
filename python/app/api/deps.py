@@ -2,40 +2,23 @@ import sys
 import os
 import asyncio
 from typing import AsyncGenerator, Dict, Any
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import redis.asyncio as redis
 
-# Add build directory to path to import _nanotrade_ext
-build_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "build"))
-if build_dir not in sys.path:
-    sys.path.append(build_dir)
-
-import _nanotrade_ext
 from app.core.config import settings
 from app.core.security import verify_jwt
 from app.core.logger import get_logger
 
 logger = get_logger(__name__)
 
-# Instantiate global matching engine (stateful, in-process C++ object)
-logger.info("Initializing C++ MatchingEngine singleton")
-engine = _nanotrade_ext.MatchingEngine()
-logger.info("MatchingEngine ready")
-
-reusable_oauth2 = HTTPBearer()
-
-# In-memory dictionary to store asyncio.Lock per user for sequential processing
-user_locks = {}
-
-def get_user_lock(user_id: str) -> asyncio.Lock:
-    if user_id not in user_locks:
-        user_locks[user_id] = asyncio.Lock()
-    return user_locks[user_id]
+reusable_oauth2 = HTTPBearer(auto_error=False)
 
 async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(reusable_oauth2)
 ) -> Dict[str, Any]:
+    if not credentials:
+        return {} # Allow unauthenticated requests to pass through to check_rate_limit for IP based limiting, but endpoints will reject if user is required.
     token = credentials.credentials
     logger.debug("Verifying JWT token")
     try:
@@ -45,7 +28,11 @@ async def get_current_user(
         return payload
     except Exception as e:
         logger.warning(f"JWT verification failed | error={e}")
-        raise
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
 async def get_redis_client() -> AsyncGenerator[redis.Redis, None]:
     client = redis.from_url(settings.REDIS_URL, decode_responses=True)
@@ -55,29 +42,47 @@ async def get_redis_client() -> AsyncGenerator[redis.Redis, None]:
         await client.aclose()
 
 async def check_rate_limit(
+    request: Request,
     current_user: Dict[str, Any] = Depends(get_current_user),
-    redis_client = Depends(get_redis_client)
+    redis_client: redis.Redis = Depends(get_redis_client)
 ):
+    """
+    Atomic rate limiting via Redis Pipeline.
+    Strict limits for POST/PUT (e.g., 5 req/sec).
+    Relaxed limits for GET (e.g., 20 req/sec).
+    Applied per user_id if authenticated, otherwise per IP.
+    """
     user_id = current_user.get("sub")
-    if not user_id:
-        return
+    client_ip = request.client.host if request.client else "unknown_ip"
+    
+    identifier = f"user:{user_id}" if user_id else f"ip:{client_ip}"
+    method = request.method
+    
+    if method in ["POST", "PUT", "DELETE"]:
+        max_requests = 5
+        window_seconds = 1
+        key = f"rate_limit:strict:{identifier}"
+    else:
+        max_requests = 20
+        window_seconds = 1
+        key = f"rate_limit:relaxed:{identifier}"
 
-    key = f"rate_limit:{user_id}"
-    requests_count = await redis_client.incr(key)
+    # Atomic INCR + EXPIRE via pipeline
+    async with redis_client.pipeline(transaction=True) as pipe:
+        pipe.incr(key)
+        pipe.expire(key, window_seconds, nx=True)
+        results = await pipe.execute()
+    
+    requests_count = results[0]
 
-    if requests_count == 1:
-        await redis_client.expire(key, 1)
-    elif requests_count > 5:
-        logger.warning(f"Rate limit exceeded | user_id={user_id} count={requests_count}")
+    if requests_count > max_requests:
+        logger.warning(f"Rate limit exceeded | method={method} identifier={identifier} count={requests_count}/{max_requests}")
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail={
-                "error": "Rate limit exceeded. Maximum 5 orders per second allowed.",
+                "error": f"Rate limit exceeded. Maximum {max_requests} requests per {window_seconds} second(s) allowed.",
                 "code": "RATE_LIMIT_EXCEEDED"
             }
         )
     else:
-        logger.debug(f"Rate limit check passed | user_id={user_id} count={requests_count}/5")
-
-def get_matching_engine() -> _nanotrade_ext.MatchingEngine:
-    return engine
+        logger.debug(f"Rate limit check passed | method={method} identifier={identifier} count={requests_count}/{max_requests}")

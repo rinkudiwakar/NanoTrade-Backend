@@ -1,7 +1,7 @@
 import json
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
-from app.api.deps import get_matching_engine, get_redis_client
+from app.api.deps import get_redis_client
 from app.core.config import settings
 from app.core.database import supabase
 
@@ -14,13 +14,16 @@ router = APIRouter()
 # ---------------------------------------------------------------------------
 
 @router.get("/orderbook")
-async def get_orderbook(engine=Depends(get_matching_engine)):
+async def get_orderbook(redis_client=Depends(get_redis_client)):
     """
-    Returns the live order book from the C++ matching engine.
+    Returns the live order book.
     Quantities are unscaled from engine units (10^6) back to BTC (6 decimals).
     """
     try:
-        book_json_str = engine.get_order_book()
+        book_json_str = await redis_client.get("engine:orderbook")
+        if not book_json_str:
+            return {"bids": [], "asks": []}
+            
         parsed_orderbook = json.loads(book_json_str)
 
         # Unscale quantities: engine stores 1 BTC as 1,000,000 units

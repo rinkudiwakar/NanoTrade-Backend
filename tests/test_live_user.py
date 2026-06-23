@@ -79,6 +79,7 @@ class TestLiveUserTrading(unittest.IsolatedAsyncioTestCase):
                 supabase.table("trades").delete().eq("seller_id", self.user_id).execute()
                 
                 # Delete orders associated with the test user
+
                 supabase.table("orders").delete().eq("user_id", self.user_id).execute()
                 
                 # Delete user from Supabase auth (cascade will delete profile and portfolio)
@@ -95,6 +96,7 @@ class TestLiveUserTrading(unittest.IsolatedAsyncioTestCase):
         portfolio = response.json()
         
         self.assertEqual(portfolio["user_id"], self.user_id)
+        print(f"DEBUG PORTFOLIO: {portfolio}")
         balance = float(portfolio["balance"])
         self.assertGreaterEqual(balance, 100000.00, f"Virtual balance is incorrect: {balance}")
         print(f"Profile verified. Starting Balance: INR {balance:.2f}")
@@ -112,14 +114,13 @@ class TestLiveUserTrading(unittest.IsolatedAsyncioTestCase):
         buy_order_res = response.json()
         
         buy_order_id = buy_order_res["order_id"]
-        self.assertEqual(buy_order_res["status"], "NEW")
-        self.assertEqual(buy_order_res["remaining_quantity"], 0.01)
-        print(f"BUY order placed successfully. ID: {buy_order_id}")
+        self.assertEqual(buy_order_res["status"], "QUEUED")
+        print(f"BUY order queued successfully. ID: {buy_order_id}")
 
         # Verify order was stored in DB
         order_db = supabase.table("orders").select("*").eq("id", buy_order_id).execute().data
         self.assertTrue(order_db, "BUY order not found in Supabase orders table")
-        self.assertEqual(order_db[0]["status"], "NEW")
+        self.assertIn(order_db[0]["status"], ["QUEUED", "PROCESSING", "FILLED"])
         self.assertFalse(order_db[0]["is_bot"])
 
         # 3. Simulate matching SELL order from system bot
@@ -130,27 +131,37 @@ class TestLiveUserTrading(unittest.IsolatedAsyncioTestCase):
             "price": 5000000.00,
             "quantity": 0.01
         }
-        response = self.client.post("/orders/simulator", json=sell_payload)
+        from app.core.config import settings
+        response = self.client.post(
+            "/orders/simulator", 
+            json=sell_payload,
+            headers={"X-Simulator-Secret": settings.SIMULATOR_SECRET}
+        )
         self.assertEqual(response.status_code, 200, f"Simulator SELL order failed: {response.text}")
         sell_order_res = response.json()
         
-        self.assertEqual(sell_order_res["status"], "FILLED")
-        self.assertEqual(len(sell_order_res["trades"]), 1)
-        
-        trade = sell_order_res["trades"][0]
-        self.assertEqual(trade["buy_order_id"], buy_order_id)
-        self.assertEqual(trade["price"], 5000000.00)
-        self.assertEqual(trade["quantity"], 0.01)
+        self.assertEqual(sell_order_res["status"], "QUEUED")
+        print(f"Simulator SELL order queued successfully. Polling for match...")
+
+        # 4. Poll database for match execution (Async processing)
+        trade = None
+        for _ in range(10):
+            import time
+            time.sleep(1)
+            trade_db = supabase.table("trades").select("*").eq("buy_order_id", buy_order_id).execute().data
+            if trade_db:
+                trade = trade_db[0]
+                break
+
+        self.assertIsNotNone(trade, "Async matching engine failed to process the order within 10 seconds")
+        self.assertEqual(float(trade["price"]), 5000000.00)
+        self.assertEqual(float(trade["quantity"]), 0.01)
         self.assertEqual(trade["buyer_id"], self.user_id)
         self.assertEqual(trade["seller_id"], "00000000-0000-0000-0000-000000000000")
-        print(f"Match executed successfully. Trade ID: {trade['trade_id']}")
+        print(f"Match executed asynchronously. Trade ID: {trade['id']}")
 
-        # Verify trade was stored in DB
-        trade_db = supabase.table("trades").select("*").eq("id", trade["trade_id"]).execute().data
-        self.assertTrue(trade_db, "Trade record not found in Supabase trades table")
-        self.assertEqual(float(trade_db[0]["price"]), 5000000.00)
-        self.assertEqual(float(trade_db[0]["quantity"]), 0.01)
-        self.assertTrue(trade_db[0]["is_bot_trade"])
+        # Verify trade was stored in DB correctly
+        self.assertTrue(trade["is_bot_trade"])
 
         # Verify original BUY order status updated to FILLED in DB
         buy_order_db = supabase.table("orders").select("status", "quantity").eq("id", buy_order_id).execute().data

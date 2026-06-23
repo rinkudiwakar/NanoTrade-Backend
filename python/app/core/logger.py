@@ -23,6 +23,7 @@ import logging
 import logging.handlers
 import os
 import sys
+import json
 from pathlib import Path
 
 
@@ -111,6 +112,43 @@ class PlainFormatter(logging.Formatter):
 
 
 # ─────────────────────────────────────────────────────────────────
+# JSON formatter for structured logs (metrics/observability)
+# ─────────────────────────────────────────────────────────────────
+class JsonFormatter(logging.Formatter):
+    def format(self, record: logging.LogRecord) -> str:
+        ms = int((record.created - int(record.created)) * 1000)
+        asctime = self.formatTime(record, "%Y-%m-%dT%H:%M:%S") + f".{ms:03d}Z"
+        
+        log_obj = {
+            "timestamp": asctime,
+            "level": record.levelname,
+            "component": record.name,
+            "message": record.getMessage()
+        }
+
+        # Include standard exception info if present
+        if record.exc_info:
+            log_obj["exception"] = self.formatException(record.exc_info)
+
+        # Include extra context fields
+        extras = {
+            k: v for k, v in record.__dict__.items()
+            if k not in logging.LogRecord.__dict__
+            and k not in ("message", "asctime", "args", "exc_info",
+                          "exc_text", "stack_info", "msg", "name",
+                          "levelname", "levelno", "pathname", "filename",
+                          "module", "lineno", "funcName", "created",
+                          "msecs", "relativeCreated", "thread",
+                          "threadName", "processName", "process",
+                          "taskName")
+        }
+        if extras:
+            log_obj.update(extras)
+
+        return json.dumps(log_obj)
+
+
+# ─────────────────────────────────────────────────────────────────
 # Setup — called ONCE at app startup
 # ─────────────────────────────────────────────────────────────────
 _initialized = False
@@ -146,7 +184,7 @@ def setup_logging(log_level: str = "DEBUG", log_dir: str = "logs") -> None:
     console_handler.setFormatter(ColoredFormatter())
     root.addHandler(console_handler)
 
-    # ── Rotating file handler ─────────────────────────────────────
+    # ── Rotating file handler (Plain Text) ────────────────────────
     file_handler = logging.handlers.RotatingFileHandler(
         filename=str(log_file),
         maxBytes=10 * 1024 * 1024,   # 10 MB
@@ -156,6 +194,18 @@ def setup_logging(log_level: str = "DEBUG", log_dir: str = "logs") -> None:
     file_handler.setLevel(numeric_level)
     file_handler.setFormatter(PlainFormatter())
     root.addHandler(file_handler)
+
+    # ── Rotating file handler (JSON) ──────────────────────────────
+    json_log_file = log_path / "nanotrade.json.log"
+    json_file_handler = logging.handlers.RotatingFileHandler(
+        filename=str(json_log_file),
+        maxBytes=10 * 1024 * 1024,   # 10 MB
+        backupCount=5,
+        encoding="utf-8"
+    )
+    json_file_handler.setLevel(numeric_level)
+    json_file_handler.setFormatter(JsonFormatter())
+    root.addHandler(json_file_handler)
 
     # Suppress noisy third-party loggers
     for noisy in ("uvicorn.access", "httpx", "httpcore", "supabase"):

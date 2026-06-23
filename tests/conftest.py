@@ -33,15 +33,15 @@ import pytest
 from unittest.mock import patch, MagicMock
 
 
-@pytest.fixture(autouse=True, scope="session")
+@pytest.fixture(autouse=True)
 def mock_supabase_session(request):
     """
     Replace the `supabase` client singleton with a MagicMock for unit tests.
-    Skip mocking for load tests (marked with @pytest.mark.load).
+    Skip mocking for load tests (marked with @pytest.mark.load) and the live user test.
     """
 
-    # 🔥 Skip mocking for load tests
-    if "load" in request.keywords:
+    # 🔥 Skip mocking for load tests and integration tests
+    if "test_live_user" in request.node.nodeid or request.node.get_closest_marker("load"):
         yield
         return
 

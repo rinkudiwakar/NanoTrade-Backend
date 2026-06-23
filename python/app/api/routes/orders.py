@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Header
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, field_validator
-from app.api.deps import get_current_user, get_matching_engine, get_redis_client, check_rate_limit
+from app.api.deps import get_current_user, get_redis_client, check_rate_limit
 from app.core.config import settings
 from app.services import order_service
 
@@ -55,7 +55,6 @@ def _verify_simulator_secret(x_simulator_secret: str = Header(default="")) -> No
 async def create_user_order(
     order_in: OrderCreate,
     current_user: dict = Depends(get_current_user),
-    engine=Depends(get_matching_engine),
     redis_client=Depends(get_redis_client)
 ):
     user_id = current_user.get("sub")
@@ -72,7 +71,6 @@ async def create_user_order(
             side=order_in.side,
             price=order_in.price,
             quantity=order_in.quantity,
-            engine=engine,
             redis_client=redis_client
         )
         return result
@@ -92,7 +90,6 @@ async def create_user_order(
 @router.post("/simulator", dependencies=[Depends(_verify_simulator_secret)])
 async def create_simulator_order(
     order_in: OrderCreate,
-    engine=Depends(get_matching_engine),
     redis_client=Depends(get_redis_client)
 ):
     """
@@ -108,7 +105,6 @@ async def create_simulator_order(
             side=order_in.side,
             price=order_in.price,
             quantity=order_in.quantity,
-            engine=engine,
             redis_client=redis_client
         )
         return result
@@ -117,3 +113,17 @@ async def create_simulator_order(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={"error": f"Simulator order processing failed: {str(e)}", "code": "SIMULATOR_ORDER_FAILED"}
         )
+
+@router.get("/history", dependencies=[Depends(check_rate_limit)])
+async def get_order_history(current_user: dict = Depends(get_current_user)):
+    """REST fallback for getting order history"""
+    user_id = current_user.get("sub")
+    if not user_id:
+        return JSONResponse(status_code=401, content={"error": "Unauthorized"})
+    
+    from app.core.database import supabase
+    try:
+        res = supabase.table("orders").select("*").eq("user_id", user_id).order("created_at", desc=True).limit(50).execute()
+        return {"orders": res.data}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})

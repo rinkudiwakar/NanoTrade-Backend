@@ -34,6 +34,7 @@ class Settings(BaseSettings):
     # ── Project ─────────────────────────────
     PROJECT_NAME: str = "NanoTrade"
     API_V1_STR: str = "/api/v1"
+    LOG_LEVEL: str = "INFO"
 
     # ── Supabase (REQUIRED) ────────────────
     SUPABASE_URL: str

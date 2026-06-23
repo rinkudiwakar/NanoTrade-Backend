@@ -1,12 +1,13 @@
 import time
 import json
 import uuid
+import asyncio
 from datetime import datetime, timezone
+from redis.asyncio.lock import Lock as RedisLock
+
 from app.core.database import supabase
 from app.core.logger import get_logger
-from app.services.portfolio_service import update_portfolio_on_trade, validate_user_funds, is_valid_uuid, get_portfolio_data
-from app.api.deps import get_user_lock
-import _nanotrade_ext
+from app.services.portfolio_service import validate_user_funds, is_valid_uuid
 
 logger = get_logger(__name__)
 
@@ -16,241 +17,81 @@ async def place_order(
     side: str,
     price: float,
     quantity: float,
-    engine: _nanotrade_ext.MatchingEngine,
     redis_client
 ) -> dict:
     """
-    Submits a limit order into the matching engine.
-    Locks execution on a per-user basis (if real user and not system bot) to serialize validation and engine execution.
-    Persists the order, matched trades, updates portfolios, and publishes updates to Redis.
+    Validates user funds and places a limit order into the matching queue.
+    Uses granular distributed locks (INR for BUY, BTC for SELL) to prevent 
+    concurrent validation races. Does NOT execute the engine synchronously.
     """
     order_id = str(uuid.uuid4())
-    logger.info(f"place_order | user_id={user_id} side={side} price={price} qty={quantity} order_id={order_id} is_user={is_user}")
+    logger.info(f"place_order start | user_id={user_id} side={side} price={price} qty={quantity} order_id={order_id} is_user={is_user}")
 
-    if is_valid_uuid(user_id) and user_id != "00000000-0000-0000-0000-000000000000":
-        logger.debug(f"Acquiring per-user lock | user_id={user_id}")
-        # Serialize processing for real users using async lock to prevent double-spending/race conditions
-        async with get_user_lock(user_id):
-            logger.debug(f"Lock acquired, validating funds | user_id={user_id} side={side}")
-            # Pre-execution validation
-            await validate_user_funds(user_id, side, price, quantity)
-            logger.debug(f"Fund validation passed | user_id={user_id}")
-            return await _process_order_internal(
-                order_id=order_id,
-                user_id=user_id,
-                is_user=is_user,
-                side=side,
-                price=price,
-                quantity=quantity,
-                engine=engine,
-                redis_client=redis_client
-            )
-    else:
-        logger.debug(f"Simulator/bot order — bypassing lock and fund check | user_id={user_id}")
-        # Simulator bots or invalid UUIDs bypass lock and funds check
-        return await _process_order_internal(
-            order_id=order_id,
-            user_id=user_id,
-            is_user=is_user,
-            side=side,
-            price=price,
-            quantity=quantity,
-            engine=engine,
-            redis_client=redis_client
-        )
-
-async def _process_order_internal(
-    order_id: str,
-    user_id: str,
-    is_user: bool,
-    side: str,
-    price: float,
-    quantity: float,
-    engine: _nanotrade_ext.MatchingEngine,
-    redis_client
-) -> dict:
     timestamp_ms = int(time.time() * 1000)
     created_at_iso = datetime.now(timezone.utc).isoformat()
-
-    # Determine bot attributes
-    is_bot = (user_id == "00000000-0000-0000-0000-000000000000")
+    is_bot = not is_user or user_id == "00000000-0000-0000-0000-000000000000"
     source = "simulator" if is_bot else "user"
 
-    # 1. Insert order into database
-    logger.debug(f"[1/7] Inserting order into DB | order_id={order_id} source={source}")
-    order_db_resp = supabase.table("orders").insert({
-        "id": order_id,
-        "user_id": user_id,
-        "side": side,
-        "price": price,
-        "quantity": quantity,
-        "status": "NEW",
-        "is_bot": is_bot,
-        "source": source,
-        "created_at": created_at_iso
-    }).execute()
+    # 1. Granular Lock for real users
+    lock = None
+    if not is_bot:
+        asset_to_lock = "INR" if side == "BUY" else "BTC"
+        lock_key = f"lock:user:{user_id}:{asset_to_lock}"
+        lock = RedisLock(redis_client, lock_key, timeout=5.0, blocking_timeout=2.0)
+        logger.debug(f"Acquiring lock | key={lock_key}")
+        acquired = await lock.acquire()
+        if not acquired:
+            logger.error(f"Failed to acquire lock | key={lock_key}")
+            raise Exception("Order placement timed out while acquiring lock. Please try again.")
 
-    if not order_db_resp.data:
-        logger.error(f"DB insert failed | order_id={order_id}")
-        raise Exception("Failed to insert order into database")
-    logger.debug(f"[1/7] Order inserted in DB OK | order_id={order_id}")
+    try:
+        # 2. Pre-execution validation
+        if not is_bot:
+            logger.debug(f"Validating funds | user_id={user_id} side={side}")
+            await validate_user_funds(user_id, side, price, quantity)
+            logger.debug(f"Fund validation passed | user_id={user_id}")
 
-    # 2. Scale quantity for C++ Matching Engine (1 BTC = 1,000,000 engine units)
-    cpp_quantity = int(quantity * 1_000_000)
-    logger.debug(f"[2/7] Scaled quantity | btc={quantity} engine_units={cpp_quantity}")
-
-    # 3. Create C++ Order object
-    order_type = _nanotrade_ext.OrderType.BUY if side == "BUY" else _nanotrade_ext.OrderType.SELL
-    cpp_order = _nanotrade_ext.Order(
-        order_id,
-        order_type,
-        float(price),
-        cpp_quantity,
-        timestamp_ms,
-        user_id,
-        is_user
-    )
-    logger.debug(f"[3/7] C++ Order object created | order_id={order_id}")
-
-    # 4. Process order in-process via C++ engine
-    logger.info(f"[4/7] Sending to C++ MatchingEngine | order_id={order_id}")
-    result = engine.process_order(cpp_order)
-    logger.info(f"[4/7] Engine result | order_id={order_id} status={result.fill_status} trades={len(result.trades)} remaining={result.remaining_quantity}")
-    
-    # 5. Handle trades generated by engine matching
-    trades_list = []
-    if result.trades:
-        logger.info(f"[5/7] Processing {len(result.trades)} trade(s) | order_id={order_id}")
-    else:
-        logger.debug(f"[5/7] No trades matched | order_id={order_id} status={result.fill_status}")
-
-    for t in result.trades:
-        unscaled_trade_qty = t.quantity / 1_000_000
-
-        # Check if either buyer or seller is bot
-        is_bot_trade = (t.buyer_id == "00000000-0000-0000-0000-000000000000" or
-                        t.seller_id == "00000000-0000-0000-0000-000000000000")
-        trade_created_at = datetime.fromtimestamp(t.timestamp / 1000.0, tz=timezone.utc).isoformat()
-
-        logger.info(f"Trade | trade_id={t.trade_id} price={t.price} qty={unscaled_trade_qty:.6f} buyer={t.buyer_id[:8]}... seller={t.seller_id[:8]}...")
-
-        # Insert trade record into Supabase
-        logger.debug(f"Inserting trade into DB | trade_id={t.trade_id}")
-        supabase.table("trades").insert({
-            "id": t.trade_id,
-            "buyer_id": t.buyer_id,
-            "seller_id": t.seller_id,
-            "price": t.price,
-            "quantity": unscaled_trade_qty,
-            "is_bot_trade": is_bot_trade,
-            "created_at": trade_created_at
+        # 3. Insert order into database as QUEUED
+        logger.debug(f"Inserting order into DB | order_id={order_id} source={source}")
+        order_db_resp = supabase.table("orders").insert({
+            "id": order_id,
+            "user_id": user_id,
+            "side": side,
+            "price": price,
+            "quantity": quantity,
+            "status": "QUEUED",
+            "is_bot": is_bot,
+            "source": source,
+            "created_at": created_at_iso
         }).execute()
 
-        # Deduct traded quantity from the order that was matched against in the database
-        matched_order_id = t.sell_order_id if side == "BUY" else t.buy_order_id
-        logger.debug(f"Updating matched order in DB | matched_order_id={matched_order_id}")
-        matched_order_db = supabase.table("orders").select("quantity").eq("id", matched_order_id).execute().data
-        if matched_order_db:
-            matched_qty = float(matched_order_db[0]["quantity"])
-            new_matched_qty = max(0.0, matched_qty - unscaled_trade_qty)
-            new_matched_status = "FILLED" if new_matched_qty < 1e-6 else "PARTIALLY_FILLED"
-            supabase.table("orders").update({
-                "quantity": new_matched_qty,
-                "status": new_matched_status
-            }).eq("id", matched_order_id).execute()
-            logger.debug(f"Matched order updated | id={matched_order_id} new_qty={new_matched_qty:.6f} status={new_matched_status}")
+        if not order_db_resp.data:
+            logger.error(f"DB insert failed | order_id={order_id}")
+            raise Exception("Failed to insert order into database")
+        logger.debug(f"Order inserted in DB OK | order_id={order_id}")
 
-        # Update user profiles and portfolios (USDT balance, BTC holdings)
-        logger.debug(f"Updating portfolios | buyer={t.buyer_id[:8]}... seller={t.seller_id[:8]}...")
-        await update_portfolio_on_trade(t.buyer_id, t.seller_id, t.price, unscaled_trade_qty)
-
-        # Format trade dictionary for JSON response/publication
-        trade_dict = {
-            "trade_id": t.trade_id,
-            "buy_order_id": t.buy_order_id,
-            "sell_order_id": t.sell_order_id,
-            "price": t.price,
-            "quantity": unscaled_trade_qty,
-            "timestamp": t.timestamp,
-            "buyer_id": t.buyer_id,
-            "seller_id": t.seller_id
+        # 4. Push order to Redis Stream for the worker daemon
+        stream_payload = {
+            "order_id": order_id,
+            "user_id": user_id,
+            "is_user": str(is_user),
+            "side": side,
+            "price": str(price),
+            "quantity": str(quantity),
+            "timestamp": str(timestamp_ms)
         }
-        trades_list.append(trade_dict)
+        
+        # XADD command adds to the stream
+        await redis_client.xadd("engine:orders_stream", stream_payload)
+        logger.info(f"Order added to Redis Stream 'engine:orders_stream' | order_id={order_id}")
 
-        # Publish standardized trade event to Redis
-        trade_event = {
-            "type": "trade",
-            "data": trade_dict,
-            "timestamp": timestamp_ms
-        }
-        await redis_client.publish("trade", json.dumps(trade_event))
-        logger.debug(f"Trade event published to Redis | trade_id={t.trade_id}")
-
-        # Publish user_update events for both parties (if real users)
-        if is_valid_uuid(t.buyer_id) and t.buyer_id != "00000000-0000-0000-0000-000000000000":
-            buyer_portfolio = await get_portfolio_data(t.buyer_id)
-            await redis_client.publish("user_update", json.dumps({
-                "type": "user_update",
-                "data": buyer_portfolio,
-                "timestamp": timestamp_ms
-            }))
-            logger.debug(f"user_update published for buyer | user_id={t.buyer_id[:8]}...")
-        if is_valid_uuid(t.seller_id) and t.seller_id != "00000000-0000-0000-0000-000000000000":
-            seller_portfolio = await get_portfolio_data(t.seller_id)
-            await redis_client.publish("user_update", json.dumps({
-                "type": "user_update",
-                "data": seller_portfolio,
-                "timestamp": timestamp_ms
-            }))
-            logger.debug(f"user_update published for seller | user_id={t.seller_id[:8]}...")
-            
-    # 6. Update the placed order's remaining quantity and status
-    unscaled_rem_qty = result.remaining_quantity / 1_000_000
-    logger.debug(f"[6/7] Updating order status in DB | order_id={order_id} status={result.fill_status} remaining_qty={unscaled_rem_qty:.6f}")
-    supabase.table("orders").update({
-        "quantity": unscaled_rem_qty,
-        "status": result.fill_status
-    }).eq("id", order_id).execute()
-
-    # 7. Publish updated C++ orderbook depth to Redis
-    logger.debug(f"[7/7] Publishing orderbook snapshot to Redis | order_id={order_id}")
-    orderbook_data = engine.get_order_book()
-    try:
-        parsed_orderbook = json.loads(orderbook_data)
-        if isinstance(parsed_orderbook, dict):
-            for side_name in ["bids", "asks"]:
-                if side_name in parsed_orderbook:
-                    for entry in parsed_orderbook[side_name]:
-                        if "quantity" in entry:
-                            entry["quantity"] = entry["quantity"] / 1_000_000
-    except Exception as e:
-        logger.warning(f"Failed to parse orderbook JSON | error={e}")
-        parsed_orderbook = orderbook_data
-
-    orderbook_event = {
-        "type": "orderbook",
-        "data": parsed_orderbook,
-        "timestamp": timestamp_ms
-    }
-    await redis_client.publish("orderbook", json.dumps(orderbook_event))
-
-    # Cache the engine's last traded price in Redis
-    last_price = engine.get_last_traded_price()
-    if last_price > 0.0:
-        await redis_client.set("last_traded_price", str(last_price))
-        price_event = {
-            "type": "price",
-            "data": {"last_traded_price": last_price},
-            "timestamp": timestamp_ms
-        }
-        await redis_client.publish("price", json.dumps(price_event))
-        logger.debug(f"Last traded price cached & published | price={last_price}")
-
-    logger.info(f"place_order COMPLETE | order_id={order_id} status={result.fill_status} trades={len(trades_list)} remaining_qty={unscaled_rem_qty:.6f}")
+    finally:
+        if lock and await lock.owned():
+            await lock.release()
+            logger.debug(f"Lock released | user_id={user_id}")
 
     return {
         "order_id": order_id,
-        "status": result.fill_status,
-        "remaining_quantity": unscaled_rem_qty,
-        "trades": trades_list
+        "status": "QUEUED",
+        "message": "Order queued for matching."
     }
