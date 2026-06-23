@@ -161,7 +161,7 @@ class EngineDaemon:
                             await self.process_messages(claimed[1])
                     continue
 
-                for stream, msg_list in messages:
+                for _stream, msg_list in messages:
                     await self.process_messages(msg_list)
 
             except Exception as e:
