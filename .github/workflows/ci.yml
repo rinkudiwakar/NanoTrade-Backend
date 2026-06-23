@@ -6,22 +6,148 @@ on:
   pull_request:
     branches: [main, master]
 
+# Cancel any in-flight run for the same branch/PR so we don't waste minutes
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build:
+  # ─────────────────────────────────────────────────────────────
+  # JOB 1: C++ — build engine + TestHarness smoke test
+  # ─────────────────────────────────────────────────────────────
+  cpp-build:
+    name: "C++ Build & Test Harness"
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Install dependencies
+      - name: Cache CMake / FetchContent
+        uses: actions/cache@v4
+        with:
+          path: |
+            build/_deps
+            ~/.cache/CPM
+          key: cmake-deps-${{ hashFiles('CMakeLists.txt') }}
+          restore-keys: cmake-deps-
+
+      - name: Install system deps
         run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential cmake g++
+          sudo apt-get update -y
+          sudo apt-get install -y build-essential cmake g++ python3-dev
 
-      - name: Configure CMake
-        run: cmake -S . -B build -D CMAKE_BUILD_TYPE=Release
+      - name: Configure CMake (Release)
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DPRODUCTION_BUILD=ON
 
-      - name: Build
+      - name: Build all targets
         run: cmake --build build --config Release -- -j$(nproc)
 
       - name: Run TestHarness
         run: ./build/TestHarness
+
+  # ─────────────────────────────────────────────────────────────
+  # JOB 2: Python — lint (flake8 + isort) + type check (mypy)
+  # ─────────────────────────────────────────────────────────────
+  python-lint:
+    name: "Python Lint & Type Check"
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: python
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: python/requirements-dev.txt
+
+      - name: Install dev dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: flake8 — style & syntax
+        run: |
+          flake8 app/ \
+            --max-line-length=120 \
+            --extend-ignore=E203,W503 \
+            --statistics
+
+      - name: isort — import order
+        run: |
+          isort app/ --check-only --diff --profile=black --line-length=120
+
+      - name: mypy — static type check
+        run: |
+          mypy app/ \
+            --ignore-missing-imports \
+            --no-strict-optional \
+            --follow-imports=silent \
+            --exclude 'app/workers/tasks.py'
+
+  # ─────────────────────────────────────────────────────────────
+  # JOB 3: Python — unit tests (fully mocked, no live services)
+  # ─────────────────────────────────────────────────────────────
+  python-unit-tests:
+    name: "Python Unit Tests"
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: python
+
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      SUPABASE_JWT_SECRET: ${{ secrets.SUPABASE_JWT_SECRET }}
+      SIMULATOR_SECRET: ${{ secrets.SIMULATOR_SECRET }}
+      REDIS_URL: "redis://localhost:6379/0"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: python/requirements-dev.txt
+
+      - name: Install dev dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Build C++ extension (_nanotrade_ext)
+        # The unit tests import _nanotrade_ext directly (to assert Order types).
+        # We build the pybind11 extension and place it where Python can find it.
+        working-directory: .
+        run: |
+          sudo apt-get update -y -q
+          sudo apt-get install -y build-essential cmake g++ python3-dev
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DPRODUCTION_BUILD=ON
+          cmake --build build --config Release --target _nanotrade_ext -- -j$(nproc)
+          # Copy the .so into the python/ directory so pytest can import it
+          find build -name "_nanotrade_ext*.so" -exec cp {} python/ \;
+
+      - name: Run unit tests with coverage
+        run: |
+          pytest ../tests/test_backend.py \
+            -v \
+            --tb=short \
+            --asyncio-mode=auto \
+            --cov=app \
+            --cov-report=term-missing \
+            --cov-report=xml:coverage.xml \
+            -p no:warnings
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-report
+          path: python/coverage.xml

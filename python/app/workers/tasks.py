@@ -90,10 +90,16 @@ def run_market_simulator():
     """
     Synthetic market simulator generating noise, momentum, clustering, and whale orders
     around the Binance reference price. Submits orders to C++ engine via FastAPI.
+    Requires SIMULATOR_SECRET to be set in .env — the shared secret protects the
+    /orders/simulator endpoint from external callers.
     """
     print("Starting market simulator...")
     r = redis.from_url(settings.REDIS_URL, decode_responses=True)
     api_url = f"http://{settings.HOST}:{settings.PORT}/orders/simulator"
+    simulator_secret = settings.SIMULATOR_SECRET
+    if not simulator_secret:
+        print("ERROR: SIMULATOR_SECRET is not set in .env. Simulator will not run.")
+        return
     
     while True:
         # 1. Fetch current Binance reference price (INR) from Redis
@@ -156,7 +162,12 @@ def run_market_simulator():
                     "price": p,
                     "quantity": q
                 }
-                resp = requests.post(api_url, json=payload, timeout=2)
+                resp = requests.post(
+                    api_url,
+                    json=payload,
+                    headers={"X-Simulator-Secret": simulator_secret},
+                    timeout=2
+                )
                 if resp.status_code == 200:
                     msg = "Whale" if is_whale else "Simulator"
                     print(f"{msg} placed {s} order: {q:.6f} BTC @ ₹{p:.2f}")

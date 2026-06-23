@@ -29,3 +29,12 @@ __pycache__/
 .venv/
 venv/
 env/
+
+# Coverage reports
+coverage.xml
+htmlcov/
+.coverage
+
+# Pybind11 compiled extension (built by CI, not checked in)
+python/_nanotrade_ext*.so
+python/_nanotrade_ext*.pyd

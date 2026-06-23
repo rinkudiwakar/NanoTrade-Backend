@@ -1,10 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Header
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field, field_validator
 from app.api.deps import get_current_user, get_matching_engine, get_redis_client, check_rate_limit
+from app.core.config import settings
 from app.services import order_service
 
 router = APIRouter()
+
 
 class OrderCreate(BaseModel):
     side: str = Field(..., pattern="^(BUY|SELL)$")
@@ -25,12 +27,36 @@ class OrderCreate(BaseModel):
             raise ValueError("Quantity precision cannot exceed 6 decimal places")
         return round(v, 6)
 
+
+def _verify_simulator_secret(x_simulator_secret: str = Header(default="")) -> None:
+    """
+    Dependency that validates the shared simulator secret header.
+    The Celery worker must send  X-Simulator-Secret: <SIMULATOR_SECRET>  on every
+    call to POST /orders/simulator.  If SIMULATOR_SECRET is unset in .env the
+    endpoint is effectively disabled (no header will ever match an empty secret).
+    """
+    expected = settings.SIMULATOR_SECRET
+    if not expected:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={
+                "error": "Simulator endpoint is disabled. Set SIMULATOR_SECRET in .env.",
+                "code": "SIMULATOR_DISABLED"
+            }
+        )
+    if x_simulator_secret != expected:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail={"error": "Invalid simulator secret.", "code": "FORBIDDEN"}
+        )
+
+
 @router.post("", dependencies=[Depends(check_rate_limit)])
 async def create_user_order(
     order_in: OrderCreate,
     current_user: dict = Depends(get_current_user),
-    engine = Depends(get_matching_engine),
-    redis_client = Depends(get_redis_client)
+    engine=Depends(get_matching_engine),
+    redis_client=Depends(get_redis_client)
 ):
     user_id = current_user.get("sub")
     if not user_id:
@@ -38,7 +64,7 @@ async def create_user_order(
             status_code=status.HTTP_401_UNAUTHORIZED,
             content={"error": "User ID not found in token", "code": "UNAUTHORIZED"}
         )
-        
+
     try:
         result = await order_service.place_order(
             user_id=user_id,
@@ -51,7 +77,7 @@ async def create_user_order(
         )
         return result
     except ValueError as e:
-        # Pre-execution funds validation error
+        # Pre-execution funds / holdings validation error
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"error": str(e), "code": "INSUFFICIENT_FUNDS_OR_HOLDINGS"}
@@ -62,13 +88,18 @@ async def create_user_order(
             content={"error": f"Order processing failed: {str(e)}", "code": "ORDER_PROCESSING_FAILED"}
         )
 
-@router.post("/simulator")
+
+@router.post("/simulator", dependencies=[Depends(_verify_simulator_secret)])
 async def create_simulator_order(
     order_in: OrderCreate,
-    engine = Depends(get_matching_engine),
-    redis_client = Depends(get_redis_client)
+    engine=Depends(get_matching_engine),
+    redis_client=Depends(get_redis_client)
 ):
-    # Simulator orders use the dedicated system bot UUID
+    """
+    Internal-only endpoint for the Celery market simulator.
+    Requires X-Simulator-Secret header matching SIMULATOR_SECRET in .env.
+    Never call this from the frontend.
+    """
     bot_id = "00000000-0000-0000-0000-000000000000"
     try:
         result = await order_service.place_order(

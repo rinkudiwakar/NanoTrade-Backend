@@ -1,6 +1,14 @@
+"""
+test_live_user.py — End-to-end integration test against a live Supabase instance.
+
+These tests are EXCLUDED from CI (they require a real .env with valid credentials).
+Run manually:
+    cd python && pytest ../tests/test_live_user.py -v -m integration
+"""
 import sys
 import os
 import unittest
+import pytest
 import uuid
 import json
 from datetime import datetime, timezone
@@ -14,6 +22,7 @@ from app.main import app
 from app.core.database import supabase
 from app.core.config import settings
 
+@pytest.mark.integration
 class TestLiveUserTrading(unittest.IsolatedAsyncioTestCase):
 
     async def asyncSetUp(self):
