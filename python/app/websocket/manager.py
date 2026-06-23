@@ -1,5 +1,4 @@
 import asyncio
-import json
 from typing import List
 from fastapi import WebSocket
 import redis.asyncio as redis
@@ -32,24 +31,70 @@ manager = ConnectionManager()
 
 async def redis_pubsub_listener(connection_manager: ConnectionManager):
     """
-    Subscribes to Redis channels and broadcasts messages to all connected WebSockets.
+    Subscribes to Redis pub/sub channels and broadcasts messages to all
+    connected WebSockets. Uses polling with get_message() to avoid socket
+    timeout errors. Auto-reconnects on transient Redis errors.
     """
-    r = redis.from_url(settings.REDIS_URL, decode_responses=True)
-    pubsub = r.pubsub()
-    await pubsub.subscribe("trade", "orderbook", "price", "user_update")
-    
-    try:
-        async for message in pubsub.listen():
-            if message and message.get("type") == "message":
-                data = message.get("data")
+    CHANNELS = ["trade", "orderbook", "price", "user_update"]
+    RETRY_DELAY = 5  # seconds before reconnect attempt
+
+    while True:
+        r = None
+        pubsub = None
+        try:
+            r = redis.from_url(
+                settings.REDIS_URL,
+                decode_responses=True,
+                socket_connect_timeout=5,
+                socket_keepalive=True,
+            )
+            await r.ping()  # verify connection before subscribing
+            pubsub = r.pubsub()
+            await pubsub.subscribe(*CHANNELS)
+            print(f"Redis pubsub listener: subscribed to {CHANNELS}")
+
+            # Poll for messages — avoids blocking listen() socket timeout errors
+            while True:
                 try:
-                    await connection_manager.broadcast(data)
+                    message = await pubsub.get_message(
+                        ignore_subscribe_messages=True,
+                        timeout=1.0
+                    )
+                    if message and message.get("type") == "message":
+                        data = message.get("data")
+                        if data:
+                            try:
+                                await connection_manager.broadcast(data)
+                            except Exception as e:
+                                print(f"Failed to broadcast WebSocket message: {e}")
+                    else:
+                        # No message this tick — yield control briefly
+                        await asyncio.sleep(0.05)
+
+                except asyncio.CancelledError:
+                    raise  # Propagate to outer try for clean shutdown
                 except Exception as e:
-                    print(f"Failed to broadcast WebSocket message: {e}")
-    except asyncio.CancelledError:
-        pass
-    except Exception as e:
-        print(f"WebSocket Redis listener encountered error: {e}")
-    finally:
-        await pubsub.unsubscribe("trade", "orderbook", "price", "user_update")
-        await r.aclose()
+                    print(f"Redis get_message error: {e}")
+                    break  # Break inner loop to trigger reconnect
+
+        except asyncio.CancelledError:
+            print("Redis pubsub listener: shutting down cleanly.")
+            break  # Exit the outer while loop
+
+        except Exception as e:
+            print(f"Redis pubsub listener: connection error — {e}. Retrying in {RETRY_DELAY}s...")
+            await asyncio.sleep(RETRY_DELAY)
+
+        finally:
+            # Always clean up, even if variables were never assigned
+            try:
+                if pubsub is not None:
+                    await pubsub.unsubscribe(*CHANNELS)
+                    await pubsub.aclose()
+            except Exception:
+                pass
+            try:
+                if r is not None:
+                    await r.aclose()
+            except Exception:
+                pass
