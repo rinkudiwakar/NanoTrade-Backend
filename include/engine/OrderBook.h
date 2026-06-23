@@ -3,6 +3,7 @@
 #include "models/Order.h"
 #include <map>
 #include <queue>
+#include <nlohmann/json.hpp>
 #include "compat/optional.h"
 
 class OrderBook
@@ -35,6 +36,9 @@ public:
   bool hasBids() const;
   bool hasAsks() const;
 
+  // Serialize to JSON
+  nlohmann::json toJson() const;
+
   // Debug helper
   void print() const;
-};
+};

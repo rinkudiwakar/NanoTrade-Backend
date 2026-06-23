@@ -5,12 +5,16 @@ Trade::Trade(int buyOrderId,
              int sellOrderId,
              double price,
              int quantity,
-             int64_t timestamp)
+             int64_t timestamp,
+             std::string buyer_id,
+             std::string seller_id)
     : buyOrderId(buyOrderId),
       sellOrderId(sellOrderId),
       price(price),
       quantity(quantity),
-      timestamp(timestamp) {}
+      timestamp(timestamp),
+      buyer_id(buyer_id),
+      seller_id(seller_id) {}
 
 void Trade::print() const
 {

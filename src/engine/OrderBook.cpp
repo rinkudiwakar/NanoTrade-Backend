@@ -103,3 +103,38 @@ void OrderBook::print() const
 
   std::cout << "-------------------\n";
 }
+
+nlohmann::json OrderBook::toJson() const
+{
+  nlohmann::json result = {
+      {"bids", nlohmann::json::array()},
+      {"asks", nlohmann::json::array()}};
+
+  for (const auto &entry : bids)
+  {
+    double price = entry.first;
+    int totalQuantity = 0;
+    std::queue<Order> q = entry.second;
+    while (!q.empty())
+    {
+      totalQuantity += q.front().quantity;
+      q.pop();
+    }
+    result["bids"].push_back({{"price", price}, {"quantity", totalQuantity}});
+  }
+
+  for (const auto &entry : asks)
+  {
+    double price = entry.first;
+    int totalQuantity = 0;
+    std::queue<Order> q = entry.second;
+    while (!q.empty())
+    {
+      totalQuantity += q.front().quantity;
+      q.pop();
+    }
+    result["asks"].push_back({{"price", price}, {"quantity", totalQuantity}});
+  }
+
+  return result;
+}

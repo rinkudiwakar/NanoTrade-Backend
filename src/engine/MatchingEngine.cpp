@@ -4,6 +4,7 @@
 
 MatchingEngine::ProcessResult MatchingEngine::processOrder(const Order &order)
 {
+  std::lock_guard<std::mutex> lock(engineMutex);
   ProcessResult result;
   Order remainingOrder = order;
 
@@ -27,7 +28,9 @@ MatchingEngine::ProcessResult MatchingEngine::processOrder(const Order &order)
           bestAsk.order_id,
           bestAsk.price,
           tradedQty,
-          tradeTimestamp);
+          tradeTimestamp,
+          remainingOrder.user_id,
+          bestAsk.user_id);
 
       remainingOrder.quantity -= tradedQty;
       int updatedAskQty = bestAsk.quantity - tradedQty;
@@ -68,7 +71,9 @@ MatchingEngine::ProcessResult MatchingEngine::processOrder(const Order &order)
           remainingOrder.order_id,
           bestBid.price,
           tradedQty,
-          tradeTimestamp);
+          tradeTimestamp,
+          bestBid.user_id,
+          remainingOrder.user_id);
 
       remainingOrder.quantity -= tradedQty;
       int updatedBidQty = bestBid.quantity - tradedQty;
@@ -90,5 +95,27 @@ MatchingEngine::ProcessResult MatchingEngine::processOrder(const Order &order)
     }
   }
 
+  // Populate metadata fields
+  result.remainingQuantity = remainingOrder.quantity;
+  if (remainingOrder.quantity == 0)
+  {
+    result.fillStatus = "FILLED";
+  }
+  else if (remainingOrder.quantity == order.quantity)
+  {
+    result.fillStatus = "NEW";
+  }
+  else
+  {
+    result.fillStatus = "PARTIAL";
+  }
+
   return result;
 }
+
+std::string MatchingEngine::getOrderBook() const
+{
+  std::lock_guard<std::mutex> lock(engineMutex);
+  return orderBook.toJson().dump();
+}
+

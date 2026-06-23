@@ -41,10 +41,12 @@ struct Order
   double price;
   int quantity;
   int64_t timestamp;
+  std::string user_id;
+  bool is_user;
 
   Order() = default;
-  Order(int order_id, OrderType type, double price, int quantity, int64_t timestamp)
-      : order_id(order_id), type(type), price(price), quantity(quantity), timestamp(timestamp) {}
+  Order(int order_id, OrderType type, double price, int quantity, int64_t timestamp, std::string user_id = "", bool is_user = false)
+      : order_id(order_id), type(type), price(price), quantity(quantity), timestamp(timestamp), user_id(user_id), is_user(is_user) {}
 
   bool isBuy() const { return type == OrderType::BUY; }
   bool isSell() const { return type == OrderType::SELL; }
@@ -67,7 +69,9 @@ inline void to_json(nlohmann::json &j, const Order &order)
       {"type", order.typeToString()},
       {"price", order.price},
       {"quantity", order.quantity},
-      {"timestamp", order.timestamp}};
+      {"timestamp", order.timestamp},
+      {"user_id", order.user_id},
+      {"is_user", order.is_user}};
 }
 
 inline void from_json(const nlohmann::json &j, Order &order)
@@ -77,4 +81,7 @@ inline void from_json(const nlohmann::json &j, Order &order)
   order.price = j.at("price").get<double>();
   order.quantity = j.at("quantity").get<int>();
   order.timestamp = j.value("timestamp", static_cast<int64_t>(std::time(nullptr)));
+  order.user_id = j.value("user_id", "");
+  order.is_user = j.value("is_user", false);
 }
+

@@ -10,12 +10,18 @@ option(ENABLE_SANITIZERS "Enable Address/Undefined sanitizers for Debug builds" 
 
 if (PRODUCTION_BUILD)
 	message(STATUS "Configuring production compiler flags")
-	# Apply aggressive optimizations for Release builds
-	add_compile_options($<$<CONFIG:Release>:-O3>)
-	add_compile_options($<$<CONFIG:Release>:-march=native>)
-	add_compile_options($<$<CONFIG:Release>:-funroll-loops>)
-	# Warnings
-	add_compile_options(-Wall -Wextra -Wpedantic)
+	if (MSVC)
+		# MSVC options
+		add_compile_options($<$<CONFIG:Release>:/O2>)
+		add_compile_options(/W4)
+	else()
+		# GCC/Clang options
+		add_compile_options($<$<CONFIG:Release>:-O3>)
+		add_compile_options($<$<CONFIG:Release>:-march=native>)
+		add_compile_options($<$<CONFIG:Release>:-funroll-loops>)
+		# Warnings
+		add_compile_options(-Wall -Wextra -Wpedantic)
+	endif()
 endif()
 
 if (ENABLE_SANITIZERS)

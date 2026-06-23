@@ -5,6 +5,8 @@
 #include "models/Trade.h"
 #include "compat/optional.h"
 #include <vector>
+#include <mutex>
+#include <string>
 
 class MatchingEngine
 {
@@ -13,12 +15,18 @@ public:
   {
     std::vector<Trade> trades;
     compat::optional<Order> remainingOrder;
+    int remainingQuantity;
+    std::string fillStatus;
   };
 
 private:
   OrderBook orderBook;
+  mutable std::mutex engineMutex;
 
 public:
   // Process one order and return trades plus remaining order if not filled
   ProcessResult processOrder(const Order &order);
-};
+
+  // Return the JSON serialized order book
+  std::string getOrderBook() const;
+};
