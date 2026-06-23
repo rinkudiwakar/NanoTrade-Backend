@@ -1,5 +1,9 @@
-from supabase import create_client, Client
+# app/core/database.py
+
+from supabase import create_client
 from app.core.config import settings
 
-# Initialize Supabase client
-supabase: Client = create_client(settings.SUPABASE_URL, settings.SUPABASE_KEY)
+supabase = create_client(
+    settings.SUPABASE_URL,
+    settings.SUPABASE_KEY
+)

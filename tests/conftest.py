@@ -29,17 +29,30 @@ if BUILD_DIR not in sys.path:
 
 # ── Session-level supabase mock ──────────────────────────────────────────────
 # Patch before any app import to avoid a live network call during module load.
+import pytest
+from unittest.mock import patch, MagicMock
+
+
 @pytest.fixture(autouse=True, scope="session")
-def mock_supabase_session():
+def mock_supabase_session(request):
     """
-    Replace the `supabase` client singleton with a MagicMock for the entire
-    test session. Individual tests can further refine this mock.
+    Replace the `supabase` client singleton with a MagicMock for unit tests.
+    Skip mocking for load tests (marked with @pytest.mark.load).
     """
+
+    # 🔥 Skip mocking for load tests
+    if "load" in request.keywords:
+        yield
+        return
+
     with patch("app.core.database.supabase", new_callable=MagicMock) as _mock:
-        # Also patch the already-imported references in service modules
+        # Also patch service layer references
         with patch("app.services.order_service.supabase", _mock):
             with patch("app.services.portfolio_service.supabase", _mock):
                 yield _mock
+                
+                
+
 
 
 # ── Reusable engine mock fixture ─────────────────────────────────────────────
