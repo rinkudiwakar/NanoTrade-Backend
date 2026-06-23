@@ -2,12 +2,13 @@ import asyncio
 import json
 import random
 import time
-import requests
+
 import redis
+import requests
 import websockets
-from app.workers.celery_app import celery_app
 from app.core.config import settings
 from app.core.logger import get_logger
+from app.workers.celery_app import celery_app
 
 logger = get_logger(__name__)
 

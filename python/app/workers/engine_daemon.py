@@ -1,8 +1,8 @@
 import asyncio
 import json
-from datetime import datetime, timezone
-import sys
 import os
+import sys
+from datetime import datetime, timezone
 
 # Add build directory to path to import _nanotrade_ext
 build_dir = os.path.abspath(
@@ -12,10 +12,10 @@ if build_dir not in sys.path:
     sys.path.append(build_dir)
 
 import _nanotrade_ext
+import redis.asyncio as redis_async
 from app.core.config import settings
 from app.core.database import supabase
-from app.core.logger import setup_logging, get_logger
-import redis.asyncio as redis_async
+from app.core.logger import get_logger, setup_logging
 from redis.exceptions import ResponseError
 
 # Initialize logging for the worker

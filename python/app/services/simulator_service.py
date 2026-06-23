@@ -16,7 +16,6 @@ import random
 from dataclasses import dataclass
 from typing import List
 
-
 # ---------------------------------------------------------------------------
 # Trader Personality Types  (PRD Section 3.3)
 # ---------------------------------------------------------------------------

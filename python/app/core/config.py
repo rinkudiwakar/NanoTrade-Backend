@@ -1,4 +1,5 @@
 import os
+
 from dotenv import load_dotenv
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -89,4 +90,4 @@ def _assert_required_secrets(s: "Settings") -> None:
 # INIT SETTINGS
 # =========================
 
-settings = Settings()
+settings = Settings()  # type: ignore

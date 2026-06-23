@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Header
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, Field, field_validator
-from app.api.deps import get_current_user, get_redis_client, check_rate_limit
+from app.api.deps import check_rate_limit, get_current_user, get_redis_client
 from app.core.config import settings
 from app.services import order_service
+from fastapi import APIRouter, Depends, Header, HTTPException, status
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field, field_validator
 
 router = APIRouter()
 

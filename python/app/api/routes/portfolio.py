@@ -1,8 +1,8 @@
+from app.api.deps import get_current_user, get_redis_client
+from app.core.config import settings
+from app.services import portfolio_service
 from fastapi import APIRouter, Depends, status
 from fastapi.responses import JSONResponse
-from app.api.deps import get_current_user, get_redis_client
-from app.services import portfolio_service
-from app.core.config import settings
 
 router = APIRouter()
 

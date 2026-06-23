@@ -1,7 +1,7 @@
 import jwt
-from fastapi import HTTPException, status
 from app.core.config import settings
 from app.core.logger import get_logger
+from fastapi import HTTPException, status
 
 logger = get_logger(__name__)
 

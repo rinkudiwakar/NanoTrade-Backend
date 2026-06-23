@@ -1,12 +1,12 @@
 import asyncio
 from contextlib import asynccontextmanager
+
+from app.api.routes import auth, market, orders, portfolio
+from app.core.config import _assert_required_secrets, settings
+from app.core.logger import get_logger
+from app.websocket.manager import manager, redis_pubsub_listener
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-
-from app.core.config import settings, _assert_required_secrets
-from app.core.logger import get_logger
-from app.api.routes import auth, orders, portfolio, market
-from app.websocket.manager import manager, redis_pubsub_listener
 
 logger = get_logger(__name__)
 

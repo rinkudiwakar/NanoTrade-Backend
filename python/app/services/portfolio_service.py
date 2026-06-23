@@ -1,4 +1,6 @@
+from typing import Any, cast
 from uuid import UUID
+
 from app.core.database import supabase
 from app.core.logger import get_logger
 
@@ -42,7 +44,8 @@ async def validate_user_funds(user_id: str, side: str, price: float, quantity: f
     locked_inr = 0.0
     locked_btc = 0.0
     if pending_resp.data:
-        for order in pending_resp.data:
+        data = cast(Any, pending_resp.data)
+        for order in data:
             # Note: For partially filled orders, the 'quantity' field in the DB should be the remaining quantity
             # OR we should track filled_quantity. To keep it simple, we assume quantity in DB is original,
             # but ideally the worker updates it to remaining. We'll use the DB quantity.
@@ -61,7 +64,7 @@ async def validate_user_funds(user_id: str, side: str, price: float, quantity: f
                 f"Fund validation FAILED — profile not found | user_id={user_id}"
             )
             raise ValueError("User profile not found")
-        balance = float(profile_resp.data[0]["balance"])
+        balance = float(cast(Any, profile_resp.data)[0]["balance"])
         available_balance = balance - locked_inr
 
         logger.debug(
@@ -85,7 +88,7 @@ async def validate_user_funds(user_id: str, side: str, price: float, quantity: f
             .execute()
         )
         holding_qty = (
-            float(portfolio_resp.data[0]["quantity"]) if portfolio_resp.data else 0.0
+            float(cast(Any, portfolio_resp.data)[0]["quantity"]) if portfolio_resp.data else 0.0
         )
         available_btc = holding_qty - locked_btc
 
@@ -112,7 +115,7 @@ async def get_portfolio_data(user_id: str) -> dict:
     profile_resp = (
         supabase.table("profiles").select("balance").eq("id", user_id).execute()
     )
-    balance = profile_resp.data[0]["balance"] if profile_resp.data else 0.0
+    balance = cast(Any, profile_resp.data)[0]["balance"] if profile_resp.data else 0.0
 
     # Fetch holdings
     holdings_resp = (
@@ -121,7 +124,7 @@ async def get_portfolio_data(user_id: str) -> dict:
         .eq("user_id", user_id)
         .execute()
     )
-    holdings = holdings_resp.data if holdings_resp.data else []
+    holdings = cast(Any, holdings_resp.data) if holdings_resp.data else []
 
     logger.debug(
         f"Portfolio fetched | user_id={user_id} balance=₹{float(balance):.2f} holdings={len(holdings)}"

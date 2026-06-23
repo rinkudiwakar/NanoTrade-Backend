@@ -1,9 +1,10 @@
 import json
-from fastapi import APIRouter, Depends, status
-from fastapi.responses import JSONResponse
+
 from app.api.deps import get_redis_client
 from app.core.config import settings
 from app.core.database import supabase
+from fastapi import APIRouter, Depends, status
+from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
@@ -119,7 +120,8 @@ async def get_recent_trades(limit: int = 50):
             .execute()
         )
 
-        trades = resp.data if resp.data else []
+        from typing import Any, cast
+        trades = cast(Any, resp.data) if resp.data else []
 
         # Format for frontend — hide internal bot UUIDs from the public feed
         BOT_ID = "00000000-0000-0000-0000-000000000000"

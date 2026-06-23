@@ -19,12 +19,11 @@ Usage in any module:
     logger.error("DB insert failed", exc_info=True)
 """
 
+import json
 import logging
 import logging.handlers
 import sys
-import json
 from pathlib import Path
-
 
 # ─────────────────────────────────────────────────────────────────
 # ANSI color codes for terminal

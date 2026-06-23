@@ -7,10 +7,11 @@ They do NOT interact with the database directly — that's Supabase's job.
 """
 
 from __future__ import annotations
-from typing import Optional
-from pydantic import BaseModel, Field
-from datetime import datetime
 
+from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel, Field
 
 # ---------------------------------------------------------------------------
 # Profile (maps to `profiles` table)
