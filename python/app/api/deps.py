@@ -14,9 +14,14 @@ if build_dir not in sys.path:
 import _nanotrade_ext
 from app.core.config import settings
 from app.core.security import verify_jwt
+from app.core.logger import get_logger
+
+logger = get_logger(__name__)
 
 # Instantiate global matching engine (stateful, in-process C++ object)
+logger.info("Initializing C++ MatchingEngine singleton")
 engine = _nanotrade_ext.MatchingEngine()
+logger.info("MatchingEngine ready")
 
 reusable_oauth2 = HTTPBearer()
 
@@ -32,7 +37,15 @@ async def get_current_user(
     credentials: HTTPAuthorizationCredentials = Depends(reusable_oauth2)
 ) -> Dict[str, Any]:
     token = credentials.credentials
-    return verify_jwt(token)
+    logger.debug("Verifying JWT token")
+    try:
+        payload = verify_jwt(token)
+        user_id = payload.get("sub", "unknown")
+        logger.debug(f"JWT verified | user_id={user_id}")
+        return payload
+    except Exception as e:
+        logger.warning(f"JWT verification failed | error={e}")
+        raise
 
 async def get_redis_client() -> AsyncGenerator[redis.Redis, None]:
     client = redis.from_url(settings.REDIS_URL, decode_responses=True)
@@ -48,13 +61,14 @@ async def check_rate_limit(
     user_id = current_user.get("sub")
     if not user_id:
         return
-        
+
     key = f"rate_limit:{user_id}"
     requests_count = await redis_client.incr(key)
-    
+
     if requests_count == 1:
         await redis_client.expire(key, 1)
     elif requests_count > 5:
+        logger.warning(f"Rate limit exceeded | user_id={user_id} count={requests_count}")
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail={
@@ -62,6 +76,8 @@ async def check_rate_limit(
                 "code": "RATE_LIMIT_EXCEEDED"
             }
         )
+    else:
+        logger.debug(f"Rate limit check passed | user_id={user_id} count={requests_count}/5")
 
 def get_matching_engine() -> _nanotrade_ext.MatchingEngine:
     return engine

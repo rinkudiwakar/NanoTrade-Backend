@@ -1,5 +1,3 @@
-
-
 # pybind11 for Python bindings
 find_package(pybind11 CONFIG QUIET)
 if (NOT pybind11_FOUND)

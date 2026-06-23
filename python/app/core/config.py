@@ -17,9 +17,6 @@ ENV_PATH = os.path.join(BASE_DIR, ".env")
 # Load environment variables
 load_dotenv(dotenv_path=ENV_PATH)
 
-# Debug (REMOVE after working)
-print("ENV PATH:", ENV_PATH)
-print("SUPABASE_URL:", os.getenv("SUPABASE_URL"))
 
 
 # =========================

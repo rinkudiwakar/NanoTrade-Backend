@@ -1,0 +1,5 @@
+[2026-06-23 19:30:10] [INFO    ] [root                          ] Logging initialized | level=DEBUG file=D:\coding\NanoTrade\python\logs\nanotrade.log
+[2026-06-23 19:30:10] [DEBUG   ] [smoke_test                    ] DEBUG message — grey
+[2026-06-23 19:30:10] [INFO    ] [smoke_test                    ] INFO  message — cyan
+[2026-06-23 19:30:10] [WARNING ] [smoke_test                    ] WARN  message — yellow
+[2026-06-23 19:30:10] [ERROR   ] [smoke_test                    ] ERROR message — red

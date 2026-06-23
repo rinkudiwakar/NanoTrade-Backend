@@ -7,6 +7,9 @@ import redis
 import websockets
 from app.workers.celery_app import celery_app
 from app.core.config import settings
+from app.core.logger import get_logger
+
+logger = get_logger(__name__)
 
 @celery_app.task
 def run_fx_converter():
@@ -14,27 +17,31 @@ def run_fx_converter():
     Long-running periodic daemon task that fetches the USD-INR FX rate
     from a public API (or fallback) every 10 seconds and caches it in Redis.
     """
-    print("Starting FX converter daemon...")
+    logger.info("[FX] FX converter task started")
     r = redis.from_url(settings.REDIS_URL, decode_responses=True)
-    
+    consecutive_failures = 0
+
     while True:
         try:
-            # Fetch latest exchange rates with USD base
+            logger.debug("[FX] Fetching USD-INR rate from open.er-api.com")
             resp = requests.get("https://open.er-api.com/v6/latest/USD", timeout=5)
             if resp.status_code == 200:
                 data = resp.json()
                 rate = data.get("rates", {}).get("INR")
                 if rate:
                     r.set(settings.REDIS_KEY_USD_INR_RATE, str(rate))
-                    print(f"FX converter: Updated cached USD_INR_RATE to {rate}")
+                    consecutive_failures = 0
+                    logger.info(f"[FX] USD_INR_RATE updated | rate={rate}")
                 else:
-                    print("FX converter: INR rate not found in API response")
+                    logger.warning("[FX] INR rate key missing in API response")
             else:
-                print(f"FX converter: API request failed with status {resp.status_code}")
+                consecutive_failures += 1
+                logger.warning(f"[FX] API request failed | status={resp.status_code} failures={consecutive_failures}")
         except Exception as e:
-            print(f"FX converter: Error fetching exchange rate: {e}")
-            
-        # Update rate every 10 seconds (NOT per tick)
+            consecutive_failures += 1
+            logger.error(f"[FX] Error fetching exchange rate | error={e} failures={consecutive_failures}", exc_info=True)
+
+        logger.debug("[FX] Sleeping 10s before next FX update")
         time.sleep(10)
 
 @celery_app.task
@@ -44,29 +51,40 @@ def run_binance_feed():
     for BTC/USDT trades, converting USD to INR using the cached FX rate,
     and storing the reference price in Redis.
     """
-    print("Starting Binance reference price feed listener...")
+    logger.info("[Binance] Binance feed task started")
     r = redis.from_url(settings.REDIS_URL, decode_responses=True)
-    
+    tick_count = 0
+
     async def listen():
+        nonlocal tick_count
         url = "wss://stream.binance.com:9443/ws/btcusdt@trade"
+        logger.info(f"[Binance] Connecting to WebSocket | url={url}")
         async with websockets.connect(url) as ws:
+            logger.info("[Binance] WebSocket connected")
             while True:
                 msg = await ws.recv()
                 data = json.loads(msg)
                 usd_price_str = data.get("p")  # 'p' is the trade price
                 if usd_price_str:
                     usd_price = float(usd_price_str)
-                    
+
                     # Read current USD-INR rate from Redis
                     rate_str = r.get(settings.REDIS_KEY_USD_INR_RATE)
                     rate = float(rate_str) if rate_str else 83.5
-                    
-                    # Convert to INR reference price (Price precision is 2 decimals)
+
+                    # Convert to INR reference price (2 decimal precision)
                     reference_price_inr = round(usd_price * rate, 2)
-                    
+
                     # Store reference price in Redis
                     r.set(settings.REDIS_KEY_REFERENCE_PRICE, str(reference_price_inr))
-                    
+
+                    tick_count += 1
+                    # Log every 50 ticks to avoid flooding (Binance sends ~2 ticks/sec)
+                    if tick_count % 50 == 1:
+                        logger.info(f"[Binance] Price tick | usd={usd_price} rate={rate} inr={reference_price_inr} ticks={tick_count}")
+                    else:
+                        logger.debug(f"[Binance] Tick | usd={usd_price} inr={reference_price_inr}")
+
                     # Publish price update event to Redis
                     price_event = {
                         "type": "price",
@@ -78,89 +96,64 @@ def run_binance_feed():
                         "timestamp": int(time.time() * 1000)
                     }
                     r.publish("price", json.dumps(price_event))
-                    
+
     try:
+        logger.info("[Binance] Starting asyncio event loop for WebSocket feed")
         asyncio.run(listen())
     except Exception as e:
-        print(f"Binance feed encountered error: {e}")
-        # Let the task finish so Celery can restart it if needed
+        logger.error(f"[Binance] Feed terminated with error | error={e}", exc_info=True)
 
 @celery_app.task
 def run_market_simulator():
     """
-    Synthetic market simulator generating noise, momentum, clustering, and whale orders
-    around the Binance reference price. Submits orders to C++ engine via FastAPI.
-    Requires SIMULATOR_SECRET to be set in .env — the shared secret protects the
+    Synthetic market simulator that generates realistic orders around the
+    Binance reference price and submits them to the C++ engine via FastAPI.
+
+    Order generation logic lives in app/services/simulator_service.py.
+    This task handles only the Celery/Redis/HTTP orchestration layer.
+
+    Requires SIMULATOR_SECRET to be set in .env to protect the
     /orders/simulator endpoint from external callers.
     """
-    print("Starting market simulator...")
+    from app.services.simulator_service import generate_simulator_orders
+
+    logger.info("[Simulator] Market simulator task started")
     r = redis.from_url(settings.REDIS_URL, decode_responses=True)
     api_url = f"http://{settings.HOST}:{settings.PORT}/orders/simulator"
     simulator_secret = settings.SIMULATOR_SECRET
+    tick_count = 0
+
     if not simulator_secret:
-        print("ERROR: SIMULATOR_SECRET is not set in .env. Simulator will not run.")
+        logger.error("[Simulator] SIMULATOR_SECRET not set in .env — simulator will not run")
         return
-    
+
+    logger.info(f"[Simulator] Targeting FastAPI at {api_url}")
+
     while True:
         # 1. Fetch current Binance reference price (INR) from Redis
         price_str = r.get(settings.REDIS_KEY_REFERENCE_PRICE)
         if not price_str:
-            price = 5594500.0  # Fallback price (~67k USD * 83.5)
+            reference_price = 5594500.0  # Fallback: ~67,000 USD * 83.5 INR/USD
+            logger.warning(f"[Simulator] No reference price in Redis — using fallback ₹{reference_price:,.2f}")
         else:
-            price = float(price_str)
-            
-        # 2. Determine side and spread
-        # spread ranges between 0.02% and 0.5% (0.0002 to 0.005)
-        spread = random.uniform(0.0002, 0.005)
-        
-        # 3. Determine if this is a "whale" order (5% probability)
-        is_whale = random.random() < 0.05
-        if is_whale:
-            # Whale trades larger volumes (1.5 to 5.0 BTC)
-            quantity = round(random.uniform(1.5, 5.0), 6)
-            # Whales can cause larger price shifts (up to 1.5% spread)
-            spread = random.uniform(0.005, 0.015)
-        else:
-            # Normal user trades smaller volumes (0.001 to 0.05 BTC)
-            quantity = round(random.uniform(0.001, 0.05), 6)
+            reference_price = float(price_str)
 
-        # 4. Decide on clustering (place multiple orders close to each other)
-        # 30% probability of clustering
-        is_cluster = random.random() < 0.3
-        
-        sides = ["BUY", "SELL"]
-        side = random.choice(sides)
-        
-        # We can place one order or a cluster of orders
-        orders_to_place = []
-        if is_cluster:
-            cluster_size = random.randint(2, 4)
-            base_qty = quantity / cluster_size
-            for i in range(cluster_size):
-                # Spread increases slightly for each outer shell of the cluster
-                layer_spread = spread + (i * 0.0005)
-                if side == "BUY":
-                    order_price = round(price * (1 - layer_spread), 2)
-                else:
-                    order_price = round(price * (1 + layer_spread), 2)
-                
-                # Small quantity variation within cluster
-                qty_var = base_qty * random.uniform(0.8, 1.2)
-                orders_to_place.append((side, order_price, round(qty_var, 6)))
-        else:
-            if side == "BUY":
-                order_price = round(price * (1 - spread), 2)
-            else:
-                order_price = round(price * (1 + spread), 2)
-            orders_to_place.append((side, order_price, quantity))
+        # 2. Generate orders via simulator service (all trader types handled inside)
+        try:
+            orders_to_place = generate_simulator_orders(reference_price)
+            logger.debug(f"[Simulator] Generated {len(orders_to_place)} order(s) | ref_price=₹{reference_price:,.2f}")
+        except Exception as e:
+            logger.error(f"[Simulator] Order generation error | error={e}", exc_info=True)
+            time.sleep(1.0)
+            continue
 
-        # 5. Submit to C++ engine via local API
-        for s, p, q in orders_to_place:
+        # 3. Submit each order to the C++ engine via the internal FastAPI endpoint
+        for order in orders_to_place:
             try:
                 payload = {
-                    "side": s,
-                    "price": p,
-                    "quantity": q
+                    "side": order.side,
+                    "price": order.price,
+                    "quantity": order.quantity
                 }
                 resp = requests.post(
                     api_url,
@@ -169,12 +162,20 @@ def run_market_simulator():
                     timeout=2
                 )
                 if resp.status_code == 200:
-                    msg = "Whale" if is_whale else "Simulator"
-                    print(f"{msg} placed {s} order: {q:.6f} BTC @ ₹{p:.2f}")
+                    tick_count += 1
+                    # Log every 20 orders to avoid flood
+                    if tick_count % 20 == 1:
+                        logger.info(f"[Simulator] Order submitted | {order.side} {order.quantity:.6f} BTC @ ₹{order.price:.2f} tick={tick_count}")
+                    else:
+                        logger.debug(f"[Simulator] {order.side} {order.quantity:.6f} BTC @ ₹{order.price:.2f}")
                 else:
-                    print(f"Simulator placement rejected: {resp.status_code} - {resp.text}")
+                    logger.warning(f"[Simulator] Order rejected | status={resp.status_code} body={resp.text[:120]}")
+            except requests.exceptions.ConnectionError:
+                logger.error("[Simulator] Cannot connect to FastAPI — is the server running?")
             except Exception as e:
-                print(f"Simulator failed to connect to FastAPI engine: {e}")
-                
-        # Random sleep interval between simulator actions (0.2s to 1.5s)
-        time.sleep(random.uniform(0.2, 1.5))
+                logger.error(f"[Simulator] Unexpected error submitting order | error={e}", exc_info=True)
+
+        # 4. Random sleep between ticks (0.2s – 1.5s mimics realistic order flow)
+        sleep_time = random.uniform(0.2, 1.5)
+        logger.debug(f"[Simulator] Sleeping {sleep_time:.2f}s before next tick")
+        time.sleep(sleep_time)

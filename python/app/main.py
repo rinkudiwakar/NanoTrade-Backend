@@ -31,44 +31,49 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
-    lifespan=lifespan,
-    # Disable interactive docs in production — set DOCS_URL=None via env if needed
+    lifespan=lifespan
 )
 
-# ── CORS ──────────────────────────────────────────────────────────────────────
-# Reads from CORS_ORIGINS env var.  An empty list means no cross-origin
-# requests are allowed, which is the safe default.
-# Wildcard ("*") must be explicitly set in CORS_ORIGINS — never the default.
-_cors_origins = settings.cors_origins_list
+# Set CORS origins
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=_cors_origins if _cors_origins else [],
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["GET", "POST"],   # only the methods we actually use
-    allow_headers=["Authorization", "Content-Type"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
-# ── Routers ───────────────────────────────────────────────────────────────────
-app.include_router(auth.router, prefix="/auth", tags=["auth"])
-app.include_router(orders.router, prefix="/orders", tags=["orders"])
+# Include routers
+app.include_router(auth.router,      prefix="/auth",      tags=["auth"])
+app.include_router(orders.router,    prefix="/orders",    tags=["orders"])
 app.include_router(portfolio.router, prefix="/portfolio", tags=["portfolio"])
-app.include_router(market.router, prefix="/market", tags=["market"])
+app.include_router(market.router,    prefix="/market",    tags=["market"])
 
 
 @app.websocket("/ws/market")
 async def websocket_market(websocket: WebSocket):
     await manager.connect(websocket)
+    client = websocket.client
+    logger.info(f"WebSocket connected | client={client}")
     try:
         while True:
-            # Keep connection alive; handle optional client control messages
             data = await websocket.receive_text()
+            logger.debug(f"WebSocket message received | data={data}")
             await websocket.send_text(f"Received: {data}")
     except WebSocketDisconnect:
+        logger.info(f"WebSocket disconnected | client={client}")
         manager.disconnect(websocket)
-    except Exception:
+    except Exception as e:
+        logger.warning(f"WebSocket error | client={client} error={e}")
         manager.disconnect(websocket)
 
 
 @app.get("/")
 async def root():
     return {"message": "Welcome to NanoTrade backend API!"}
+
+
+@app.get("/health")
+async def health():
+    logger.debug("Health check called")
+    return {"status": "ok", "service": settings.PROJECT_NAME}
