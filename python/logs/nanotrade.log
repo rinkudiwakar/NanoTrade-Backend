@@ -1057,3 +1057,73 @@ TypeError: object list can't be used in 'await' expression
 [2026-06-23 20:52:29] [INFO    ] [engine_daemon                 ] Starting order consumption loop...
 [2026-06-23 20:52:55] [INFO    ] [engine_daemon                 ] Successfully processed and ACKed msg_id=1782228175326-0
 [2026-06-23 20:52:56] [INFO    ] [engine_daemon                 ] Successfully processed and ACKed msg_id=1782228175537-0
+[2026-06-23 22:15:39] [ERROR   ] [engine_daemon                 ] Error in stream loop: Timeout reading from localhost:6379
+Traceback (most recent call last):
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\asyncio\connection.py", line 755, in read_response
+    response = await self._parser.read_response(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        disable_decoding=disable_decoding, push_request=push_request
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\_parsers\resp3.py", line 185, in read_response
+    response = await self._read_response(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+        disable_decoding=disable_decoding, push_request=push_request
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\_parsers\resp3.py", line 197, in _read_response
+    raw = await self._readline()
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\_parsers\base.py", line 578, in _readline
+    data = await self._stream.readline()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\ProgramData\anaconda3\Lib\asyncio\streams.py", line 562, in readline
+    line = await self.readuntil(sep)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\ProgramData\anaconda3\Lib\asyncio\streams.py", line 677, in readuntil
+    await self._wait_for_data('readuntil')
+  File "C:\ProgramData\anaconda3\Lib\asyncio\streams.py", line 539, in _wait_for_data
+    await self._waiter
+asyncio.exceptions.CancelledError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\asyncio\connection.py", line 754, in read_response
+    async with async_timeout(read_timeout):
+               ~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\ProgramData\anaconda3\Lib\asyncio\timeouts.py", line 116, in __aexit__
+    raise TimeoutError from exc_val
+TimeoutError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\commands\core.py", line 7791, in _record_and_return
+    actual_response = await response
+                      ^^^^^^^^^^^^^^
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\asyncio\client.py", line 839, in execute_command
+    result = await conn.retry.call_with_retry(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\asyncio\retry.py", line 81, in call_with_retry
+    raise error
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\asyncio\retry.py", line 69, in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\asyncio\client.py", line 780, in _send_command_parse_response
+    return await self.parse_response(conn, command_name, **options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\asyncio\client.py", line 881, in parse_response
+    response = await connection.read_response()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\asyncio\connection.py", line 778, in read_response
+    raise TimeoutError(f"Timeout reading from {host_error}")
+redis.exceptions.TimeoutError: Timeout reading from localhost:6379

@@ -14,8 +14,10 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 # Path to .env inside python/
 ENV_PATH = os.path.join(BASE_DIR, ".env")
 
-# Load environment variables
-load_dotenv(dotenv_path=ENV_PATH)
+# Load environment variables if .env exists
+if os.path.exists(ENV_PATH):
+    load_dotenv(dotenv_path=ENV_PATH)
+
 
 
 

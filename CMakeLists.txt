@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 project(NanoTrade)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Production and toolchain options
 option(PRODUCTION_BUILD "Enable production compiler/linker flags optimised for low latency" ON)

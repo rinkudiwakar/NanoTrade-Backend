@@ -4,8 +4,11 @@ from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings, _assert_required_secrets
+from app.core.logger import get_logger
 from app.api.routes import auth, orders, portfolio, market
 from app.websocket.manager import manager, redis_pubsub_listener
+
+logger = get_logger(__name__)
 
 
 # Lifecycle context manager for startup and shutdown events
@@ -35,13 +38,23 @@ app = FastAPI(
 )
 
 # Set CORS origins
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+if settings.cors_origins_list:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_origins_list,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+else:
+    # Fallback to wildcard for local dev if not specified
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 # Include routers
 app.include_router(auth.router,      prefix="/auth",      tags=["auth"])
