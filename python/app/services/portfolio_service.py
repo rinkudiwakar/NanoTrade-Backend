@@ -15,7 +15,7 @@ async def validate_user_funds(user_id: str, side: str, price: float, quantity: f
     Validate that the user has sufficient funds (for BUY) or sufficient assets (for SELL)
     before processing the order.
     """
-    if not is_valid_uuid(user_id):
+    if not is_valid_uuid(user_id) or user_id == "00000000-0000-0000-0000-000000000000":
         # Skip validation for simulator bots
         return
 
@@ -59,8 +59,8 @@ async def update_portfolio_on_trade(buyer_id: str, seller_id: str, price: float,
     """
     trade_value = price * quantity
 
-    # 1. Update Buyer (if real user)
-    if is_valid_uuid(buyer_id):
+    # 1. Update Buyer (if real user and not system bot)
+    if is_valid_uuid(buyer_id) and buyer_id != "00000000-0000-0000-0000-000000000000":
         # Deduct USDT balance from profile
         buyer_profile = supabase.table("profiles").select("balance").eq("id", buyer_id).execute().data
         if buyer_profile:
@@ -86,8 +86,8 @@ async def update_portfolio_on_trade(buyer_id: str, seller_id: str, price: float,
                 "avg_price": price
             }).execute()
 
-    # 2. Update Seller (if real user)
-    if is_valid_uuid(seller_id):
+    # 2. Update Seller (if real user and not system bot)
+    if is_valid_uuid(seller_id) and seller_id != "00000000-0000-0000-0000-000000000000":
         # Add USDT balance to profile
         seller_profile = supabase.table("profiles").select("balance").eq("id", seller_id).execute().data
         if seller_profile:

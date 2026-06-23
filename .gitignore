@@ -15,3 +15,16 @@ Thumbs.db
 
 # Python runner
 run_test.py
+
+# Credentials and Local Settings
+.env
+.env.local
+
+# Python caches
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+env/

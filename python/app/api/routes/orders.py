@@ -68,8 +68,8 @@ async def create_simulator_order(
     engine = Depends(get_matching_engine),
     redis_client = Depends(get_redis_client)
 ):
-    # Simulator orders are marked as is_user=False and have a bot ID
-    bot_id = "bot_simulator"
+    # Simulator orders use the dedicated system bot UUID
+    bot_id = "00000000-0000-0000-0000-000000000000"
     try:
         result = await order_service.place_order(
             user_id=bot_id,

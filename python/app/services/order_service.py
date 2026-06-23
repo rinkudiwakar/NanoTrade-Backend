@@ -1,6 +1,7 @@
 import time
 import json
 import uuid
+from datetime import datetime, timezone
 from app.core.database import supabase
 from app.services.portfolio_service import update_portfolio_on_trade, validate_user_funds, is_valid_uuid, get_portfolio_data
 from app.api.deps import get_user_lock
@@ -17,12 +18,12 @@ async def place_order(
 ) -> dict:
     """
     Submits a limit order into the matching engine.
-    Locks execution on a per-user basis (if real user) to serialize validation and engine execution.
+    Locks execution on a per-user basis (if real user and not system bot) to serialize validation and engine execution.
     Persists the order, matched trades, updates portfolios, and publishes updates to Redis.
     """
     order_id = str(uuid.uuid4())
 
-    if is_valid_uuid(user_id):
+    if is_valid_uuid(user_id) and user_id != "00000000-0000-0000-0000-000000000000":
         # Serialize processing for real users using async lock to prevent double-spending/race conditions
         async with get_user_lock(user_id):
             # Pre-execution validation
@@ -61,6 +62,11 @@ async def _process_order_internal(
     redis_client
 ) -> dict:
     timestamp_ms = int(time.time() * 1000)
+    created_at_iso = datetime.now(timezone.utc).isoformat()
+    
+    # Determine bot attributes
+    is_bot = (user_id == "00000000-0000-0000-0000-000000000000")
+    source = "simulator" if is_bot else "user"
 
     # 1. Insert order into database
     order_db_resp = supabase.table("orders").insert({
@@ -70,7 +76,9 @@ async def _process_order_internal(
         "price": price,
         "quantity": quantity,  # Keep unscaled float in database
         "status": "NEW",
-        "created_at": timestamp_ms
+        "is_bot": is_bot,
+        "source": source,
+        "created_at": created_at_iso
     }).execute()
     
     if not order_db_resp.data:
@@ -99,6 +107,11 @@ async def _process_order_internal(
     for t in result.trades:
         unscaled_trade_qty = t.quantity / 1_000_000
         
+        # Check if either buyer or seller is bot
+        is_bot_trade = (t.buyer_id == "00000000-0000-0000-0000-000000000000" or 
+                        t.seller_id == "00000000-0000-0000-0000-000000000000")
+        trade_created_at = datetime.fromtimestamp(t.timestamp / 1000.0, tz=timezone.utc).isoformat()
+        
         # Insert trade record into Supabase
         supabase.table("trades").insert({
             "id": t.trade_id,
@@ -106,7 +119,8 @@ async def _process_order_internal(
             "seller_id": t.seller_id,
             "price": t.price,
             "quantity": unscaled_trade_qty,
-            "timestamp": t.timestamp
+            "is_bot_trade": is_bot_trade,
+            "created_at": trade_created_at
         }).execute()
         
         # Deduct traded quantity from the order that was matched against in the database
@@ -146,14 +160,14 @@ async def _process_order_internal(
         await redis_client.publish("trade", json.dumps(trade_event))
         
         # Publish user_update events for both parties (if real users)
-        if is_valid_uuid(t.buyer_id):
+        if is_valid_uuid(t.buyer_id) and t.buyer_id != "00000000-0000-0000-0000-000000000000":
             buyer_portfolio = await get_portfolio_data(t.buyer_id)
             await redis_client.publish("user_update", json.dumps({
                 "type": "user_update",
                 "data": buyer_portfolio,
                 "timestamp": timestamp_ms
             }))
-        if is_valid_uuid(t.seller_id):
+        if is_valid_uuid(t.seller_id) and t.seller_id != "00000000-0000-0000-0000-000000000000":
             seller_portfolio = await get_portfolio_data(t.seller_id)
             await redis_client.publish("user_update", json.dumps({
                 "type": "user_update",
