@@ -1,2 +1,0 @@
-C:\MinGW\bin\ar.exe qc libmodels.a CMakeFiles/models.dir/src/models/Order.cpp.obj
-C:\MinGW\bin\ranlib.exe libmodels.a

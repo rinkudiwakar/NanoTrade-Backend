@@ -1,0 +1,17 @@
+# Build artifacts
+/build/
+/*.exe
+/*.dll
+/*.lib
+/*.a
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Editor
+.vscode/
+*.swp
+
+# Python runner
+run_test.py

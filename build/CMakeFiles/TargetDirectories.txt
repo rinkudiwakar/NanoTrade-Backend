@@ -1,6 +1,0 @@
-D:/coding/NanoTrade/build/CMakeFiles/engine.dir
-D:/coding/NanoTrade/build/CMakeFiles/models.dir
-D:/coding/NanoTrade/build/CMakeFiles/utils.dir
-D:/coding/NanoTrade/build/CMakeFiles/NanoTrade.dir
-D:/coding/NanoTrade/build/CMakeFiles/edit_cache.dir
-D:/coding/NanoTrade/build/CMakeFiles/rebuild_cache.dir

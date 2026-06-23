@@ -1,0 +1,18 @@
+
+
+# pybind11 for Python bindings
+find_package(pybind11 CONFIG QUIET)
+if (NOT pybind11_FOUND)
+	include(FetchContent)
+	FetchContent_Declare(
+		pybind11
+		GIT_REPOSITORY https://github.com/pybind/pybind11.git
+		GIT_TAG v2.13.2
+	)
+	FetchContent_MakeAvailable(pybind11)
+endif()
+
+# Python extension module
+pybind11_add_module(_nanotrade_ext src/bindings.cpp)
+target_link_libraries(_nanotrade_ext PRIVATE engine models utils nlohmann_json::nlohmann_json)
+target_include_directories(_nanotrade_ext PRIVATE include)

@@ -1,50 +1,94 @@
-#include <iostream>
 #include "engine/MatchingEngine.h"
+#include <algorithm>
+#include <ctime>
 
-void MatchingEngine::addOrder(const Order &order)
+MatchingEngine::ProcessResult MatchingEngine::processOrder(const Order &order)
 {
-  orderBook.addOrder(order);
-  matchOrders();
-}
+  ProcessResult result;
+  Order remainingOrder = order;
 
-void MatchingEngine::matchOrders()
-{
-  auto &buyBook = orderBook.getBuyBook();
-  auto &sellBook = orderBook.getSellBook();
-
-  while (!buyBook.empty() && !sellBook.empty())
+  if (remainingOrder.type == OrderType::BUY)
   {
-    auto bestBuy = buyBook.begin();
-    auto bestSell = sellBook.begin();
-
-    if (bestBuy->first >= bestSell->first)
+    while (orderBook.hasAsks() && remainingOrder.quantity > 0)
     {
-      Order &buyOrder = bestBuy->second.front();
-      Order &sellOrder = bestSell->second.front();
+      auto bestAskOpt = orderBook.getBestAsk();
+      if (!bestAskOpt)
+        break;
 
-      int tradedQty = std::min(buyOrder.quantity, sellOrder.quantity);
+      Order bestAsk = *bestAskOpt;
+      if (bestAsk.price > remainingOrder.price)
+        break;
 
-      std::cout << "TRADE: "
-                << tradedQty << " @ " << bestSell->first << std::endl;
+      int tradedQty = std::min(remainingOrder.quantity, bestAsk.quantity);
+      int64_t tradeTimestamp = static_cast<int64_t>(std::time(nullptr));
 
-      buyOrder.quantity -= tradedQty;
-      sellOrder.quantity -= tradedQty;
+      result.trades.emplace_back(
+          remainingOrder.order_id,
+          bestAsk.order_id,
+          bestAsk.price,
+          tradedQty,
+          tradeTimestamp);
 
-      if (buyOrder.quantity == 0)
-        bestBuy->second.pop();
+      remainingOrder.quantity -= tradedQty;
+      int updatedAskQty = bestAsk.quantity - tradedQty;
 
-      if (sellOrder.quantity == 0)
-        bestSell->second.pop();
-
-      if (bestBuy->second.empty())
-        buyBook.erase(bestBuy);
-
-      if (bestSell->second.empty())
-        sellBook.erase(bestSell);
+      if (updatedAskQty <= 0)
+      {
+        orderBook.removeBestAsk();
+      }
+      else
+      {
+        orderBook.updateBestAsk(updatedAskQty);
+      }
     }
-    else
+
+    if (remainingOrder.quantity > 0)
     {
-      break;
+      orderBook.addBid(remainingOrder);
+      result.remainingOrder = remainingOrder;
     }
   }
+  else
+  {
+    while (orderBook.hasBids() && remainingOrder.quantity > 0)
+    {
+      auto bestBidOpt = orderBook.getBestBid();
+      if (!bestBidOpt)
+        break;
+
+      Order bestBid = *bestBidOpt;
+      if (bestBid.price < remainingOrder.price)
+        break;
+
+      int tradedQty = std::min(remainingOrder.quantity, bestBid.quantity);
+      int64_t tradeTimestamp = static_cast<int64_t>(std::time(nullptr));
+
+      result.trades.emplace_back(
+          bestBid.order_id,
+          remainingOrder.order_id,
+          bestBid.price,
+          tradedQty,
+          tradeTimestamp);
+
+      remainingOrder.quantity -= tradedQty;
+      int updatedBidQty = bestBid.quantity - tradedQty;
+
+      if (updatedBidQty <= 0)
+      {
+        orderBook.removeBestBid();
+      }
+      else
+      {
+        orderBook.updateBestBid(updatedBidQty);
+      }
+    }
+
+    if (remainingOrder.quantity > 0)
+    {
+      orderBook.addAsk(remainingOrder);
+      result.remainingOrder = remainingOrder;
+    }
+  }
+
+  return result;
 }
