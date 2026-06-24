@@ -22,14 +22,21 @@ async def lifespan(app: FastAPI):
     # This prevents the server from running with invalid / leaked credentials.
     _assert_required_secrets(settings)
 
+    from app.market_data import market_data_listener
+    
     # Start the background Redis listener task
     redis_task = asyncio.create_task(redis_pubsub_listener(manager))
+    
+    # Start the market data listener daemon in the background
+    market_data_task = asyncio.create_task(market_data_listener())
+    
     yield
 
     # ── Shutdown ──────────────────────────────────────────────────────────────
     redis_task.cancel()
+    market_data_task.cancel()
     try:
-        await redis_task
+        await asyncio.gather(redis_task, market_data_task)
     except asyncio.CancelledError:
         pass
 
