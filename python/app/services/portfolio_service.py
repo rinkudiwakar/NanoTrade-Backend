@@ -108,6 +108,7 @@ async def validate_user_funds(user_id: str, side: str, price: float, quantity: f
 async def get_portfolio_data(user_id: str) -> dict:
     """
     Fetch the portfolio data for a user including INR balance, holdings, and current PnL.
+    Also calculates locked funds in pending orders to return available_balance.
     """
     logger.debug(f"Fetching portfolio | user_id={user_id}")
 
@@ -115,7 +116,7 @@ async def get_portfolio_data(user_id: str) -> dict:
     profile_resp = (
         supabase.table("profiles").select("balance").eq("id", user_id).execute()
     )
-    balance = cast(Any, profile_resp.data)[0]["balance"] if profile_resp.data else 0.0
+    balance = float(cast(Any, profile_resp.data)[0]["balance"]) if profile_resp.data else 0.0
 
     # Fetch holdings
     holdings_resp = (
@@ -126,10 +127,33 @@ async def get_portfolio_data(user_id: str) -> dict:
     )
     holdings = cast(Any, holdings_resp.data) if holdings_resp.data else []
 
-    logger.debug(
-        f"Portfolio fetched | user_id={user_id} balance=₹{float(balance):.2f} holdings={len(holdings)}"
+    # Fetch pending orders to calculate locked funds
+    pending_resp = (
+        supabase.table("orders")
+        .select("side, price, quantity, status")
+        .eq("user_id", user_id)
+        .in_("status", ["NEW", "QUEUED", "PROCESSING", "PARTIALLY_FILLED"])
+        .execute()
     )
-    return {"user_id": user_id, "balance": balance, "holdings": holdings}
+    
+    locked_inr = 0.0
+    if pending_resp.data:
+        data = cast(Any, pending_resp.data)
+        for order in data:
+            if order["side"] == "BUY":
+                locked_inr += float(order["price"]) * float(order["quantity"])
+
+    available_balance = balance - locked_inr
+
+    logger.debug(
+        f"Portfolio fetched | user_id={user_id} balance=₹{balance:.2f} available=₹{available_balance:.2f}"
+    )
+    return {
+        "user_id": user_id, 
+        "balance": available_balance, 
+        "total_balance": balance,
+        "holdings": holdings
+    }
 
 
 # update_portfolio_on_trade has been removed.
