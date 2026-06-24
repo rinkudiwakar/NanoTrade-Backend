@@ -53,83 +53,6 @@ def run_fx_converter():
         time.sleep(10)
 
 
-@celery_app.task
-def run_binance_feed():
-    """
-    Long-running daemon task subscribing to public Binance WebSocket feed
-    for BTC/USDT. Converts USD to INR using the cached FX rate,
-    and storing the reference price in Redis.
-    """
-    logger.info("[Binance] Binance feed task started")
-    r = redis.from_url(settings.REDIS_URL, decode_responses=True)
-    tick_count = 0
-
-    # 1. Fetch initial price via REST to avoid waiting for the first WS tick
-    try:
-        resp = requests.get("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT", timeout=5)
-        if resp.status_code == 200:
-            usd_price = float(resp.json()["price"])
-            rate_str = r.get(settings.REDIS_KEY_USD_INR_RATE)
-            rate = float(rate_str) if rate_str else 83.5
-            initial_inr = round(usd_price * rate, 2)
-            r.set(settings.REDIS_KEY_REFERENCE_PRICE, str(initial_inr))
-            logger.info(f"[Binance] Initial REST price fetched | usd={usd_price} inr={initial_inr}")
-    except Exception as e:
-        logger.warning(f"[Binance] Failed to fetch initial REST price: {e}")
-
-    async def listen():
-        nonlocal tick_count
-        # Use global Binance @ticker stream (updates every 1s regardless of trade volume)
-        url = "wss://stream.binance.com:9443/ws/btcusdt@ticker"
-        logger.info(f"[Binance] Connecting to WebSocket | url={url}")
-        async with websockets.connect(url) as ws:
-            logger.info("[Binance] WebSocket connected")
-            while True:
-                msg = await ws.recv()
-                data = json.loads(msg)
-                usd_price_str = data.get("c")  # 'c' is the current close price in @ticker
-                if usd_price_str:
-                    usd_price = float(usd_price_str)
-
-                    # Read current USD-INR rate from Redis
-                    rate_str = r.get(settings.REDIS_KEY_USD_INR_RATE)
-                    rate = float(rate_str) if rate_str else 83.5
-
-                    # Convert to INR reference price (2 decimal precision)
-                    reference_price_inr = round(usd_price * rate, 2)
-
-                    # Store reference price in Redis
-                    r.set(settings.REDIS_KEY_REFERENCE_PRICE, str(reference_price_inr))
-
-                    tick_count += 1
-                    # Log every 50 ticks to avoid flooding
-                    if tick_count % 50 == 1:
-                        logger.info(
-                            f"[Binance] Price tick | usd={usd_price} rate={rate} inr={reference_price_inr} ticks={tick_count}"
-                        )
-                    else:
-                        logger.debug(
-                            f"[Binance] Tick | usd={usd_price} inr={reference_price_inr}"
-                        )
-
-                    # Publish price update event to Redis
-                    price_event = {
-                        "type": "price",
-                        "data": {
-                            "binance_price_usd": usd_price,
-                            "usd_inr_rate": rate,
-                            "reference_price_inr": reference_price_inr,
-                        },
-                        "timestamp": int(time.time() * 1000),
-                    }
-                    r.publish("price", json.dumps(price_event))
-
-    try:
-        logger.info("[Binance] Starting asyncio event loop for WebSocket feed")
-        asyncio.run(listen())
-    except Exception as e:
-        logger.error(f"[Binance] Feed terminated with error | error={e}", exc_info=True)
-
 
 @celery_app.task
 def run_market_simulator():
@@ -161,7 +84,7 @@ def run_market_simulator():
 
     while True:
         # 1. Fetch current Binance reference price (INR) from Redis
-        price_str = r.get(settings.REDIS_KEY_REFERENCE_PRICE)
+        price_str = r.get("price:btc_inr")
         if not price_str:
             reference_price = 5594500.0  # Fallback: ~67,000 USD * 83.5 INR/USD
             logger.warning(

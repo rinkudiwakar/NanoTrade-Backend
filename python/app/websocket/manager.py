@@ -69,7 +69,7 @@ async def redis_pubsub_listener(connection_manager: ConnectionManager):
     connected WebSockets. Uses polling with get_message() to avoid socket
     timeout errors. Auto-reconnects on transient Redis errors.
     """
-    CHANNELS = ["trade", "orderbook", "price", "user_update"]
+    CHANNELS = ["trade", "orderbook", "user_update", "market:price", "market:trades", "market:kline"]
     RETRY_DELAY = 5  # seconds before reconnect attempt
     reconnect_count = 0
     total_messages = 0
