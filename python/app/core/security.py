@@ -1,7 +1,8 @@
 import jwt
+from fastapi import HTTPException, status
+
 from app.core.config import settings
 from app.core.logger import get_logger
-from fastapi import HTTPException, status
 
 logger = get_logger(__name__)
 
@@ -26,13 +27,14 @@ def verify_jwt(token: str) -> dict:
                 settings.SUPABASE_JWT_SECRET,
                 algorithms=["HS256"],
                 options={"verify_aud": False},  # Supabase aud is 'authenticated'
+                leeway=10,
             )
         else:
             # For modern/asymmetric projects (ES256), verify using public key fetched from JWKS
             logger.debug(f"Verifying JWT with {alg} (JWKS public key)")
             signing_key = jwk_client.get_signing_key_from_jwt(token)
             payload = jwt.decode(
-                token, signing_key.key, algorithms=[alg], options={"verify_aud": False}
+                token, signing_key.key, algorithms=[alg], options={"verify_aud": False}, leeway=10
             )
 
         user_id = payload.get("sub", "unknown")

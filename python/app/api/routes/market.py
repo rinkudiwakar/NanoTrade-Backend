@@ -1,10 +1,11 @@
 import json
 
+from fastapi import APIRouter, Depends, status
+from fastapi.responses import JSONResponse
+
 from app.api.deps import get_redis_client
 from app.core.config import settings
 from app.core.database import supabase
-from fastapi import APIRouter, Depends, status
-from fastapi.responses import JSONResponse
 
 router = APIRouter()
 

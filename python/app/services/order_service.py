@@ -2,10 +2,11 @@ import time
 import uuid
 from datetime import datetime, timezone
 
+from redis.asyncio.lock import Lock as RedisLock
+
 from app.core.database import supabase
 from app.core.logger import get_logger
 from app.services.portfolio_service import validate_user_funds
-from redis.asyncio.lock import Lock as RedisLock
 
 logger = get_logger(__name__)
 

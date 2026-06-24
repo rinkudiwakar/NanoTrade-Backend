@@ -6,6 +6,7 @@ import time
 import redis
 import requests
 import websockets
+
 from app.core.config import settings
 from app.core.logger import get_logger
 from app.workers.celery_app import celery_app

@@ -13,10 +13,11 @@ if build_dir not in sys.path:
 
 import _nanotrade_ext
 import redis.asyncio as redis_async
+from redis.exceptions import ResponseError
+
 from app.core.config import settings
 from app.core.database import supabase
 from app.core.logger import get_logger, setup_logging
-from redis.exceptions import ResponseError
 
 # Initialize logging for the worker
 setup_logging(log_level=settings.LOG_LEVEL)

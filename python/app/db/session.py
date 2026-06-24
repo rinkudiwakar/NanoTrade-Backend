@@ -7,9 +7,9 @@ Provides a single shared Supabase client and a helper to get it as a FastAPI dep
 Architecture rule: Only FastAPI (not C++ engine) ever touches the DB.
 """
 
-from app.core.database import supabase as _supabase_client
-
 from supabase import Client
+
+from app.core.database import supabase as _supabase_client
 
 
 def get_supabase() -> Client:
