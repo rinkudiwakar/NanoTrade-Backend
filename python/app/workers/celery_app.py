@@ -29,7 +29,6 @@ def at_start(sender, **k):
     logger.info("Worker is ready! Sending daemon tasks to the queue...")
     with sender.app.connection() as conn:
         sender.app.send_task("app.workers.tasks.run_fx_converter", connection=conn)
-        sender.app.send_task("app.workers.tasks.run_binance_feed", connection=conn)
         sender.app.send_task("app.workers.tasks.run_market_simulator", connection=conn)
 
 if __name__ == "__main__":
