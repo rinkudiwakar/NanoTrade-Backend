@@ -1,0 +1,14 @@
+[flake8]
+max-line-length = 120
+extend-ignore =
+    # Whitespace before ':' (conflicts with Black formatter)
+    E203,
+    # Line break before binary operator (W503 is ignored per PEP 8 update)
+    W503,
+    # Missing docstring in public module (too noisy for services layer)
+    D100,D101,D102,D103
+per-file-ignores =
+    # Test files: allow longer lines and unused imports
+    tests/*: E501, F401
+statistics = True
+count = True

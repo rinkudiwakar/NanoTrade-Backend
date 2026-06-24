@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+redis
+websockets
+supabase
+pyjwt
+pydantic-settings
+python-dotenv
+requests
+celery

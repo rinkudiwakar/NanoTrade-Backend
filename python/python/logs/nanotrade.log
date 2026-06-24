@@ -1,0 +1,1129 @@
+[2026-06-23 19:30:10] [INFO    ] [root                          ] Logging initialized | level=DEBUG file=D:\coding\NanoTrade\python\logs\nanotrade.log
+[2026-06-23 19:30:10] [DEBUG   ] [smoke_test                    ] DEBUG message — grey
+[2026-06-23 19:30:10] [INFO    ] [smoke_test                    ] INFO  message — cyan
+[2026-06-23 19:30:10] [WARNING ] [smoke_test                    ] WARN  message — yellow
+[2026-06-23 19:30:10] [ERROR   ] [smoke_test                    ] ERROR message — red
+[2026-06-23 20:15:17] [INFO    ] [root                          ] Logging initialized | level=INFO file=D:\coding\NanoTrade\python\logs\nanotrade.log
+[2026-06-23 20:15:17] [INFO    ] [engine_daemon                 ] Created consumer group engine_group for stream engine:orders_stream
+[2026-06-23 20:15:17] [INFO    ] [engine_daemon                 ] Hydrating Matching Engine from database...
+[2026-06-23 20:15:19] [INFO    ] [engine_daemon                 ] Found 19 active orders to hydrate.
+[2026-06-23 20:15:19] [INFO    ] [engine_daemon                 ] Hydration complete.
+[2026-06-23 20:15:19] [INFO    ] [engine_daemon                 ] Starting order consumption loop...
+[2026-06-23 20:15:45] [INFO    ] [root                          ] Logging initialized | level=INFO file=D:\coding\NanoTrade\python\logs\nanotrade.log
+[2026-06-23 20:16:23] [INFO    ] [root                          ] Logging initialized | level=INFO file=D:\coding\NanoTrade\python\logs\nanotrade.log
+[2026-06-23 20:16:23] [INFO    ] [engine_daemon                 ] Consumer group engine_group already exists
+[2026-06-23 20:16:23] [INFO    ] [engine_daemon                 ] Hydrating Matching Engine from database...
+[2026-06-23 20:16:24] [INFO    ] [engine_daemon                 ] Found 19 active orders to hydrate.
+[2026-06-23 20:16:24] [INFO    ] [engine_daemon                 ] Hydration complete.
+[2026-06-23 20:16:24] [ERROR   ] [engine_daemon                 ] Failed to publish orderbook: object bool can't be used in 'await' expression
+[2026-06-23 20:16:24] [INFO    ] [engine_daemon                 ] Starting order consumption loop...
+[2026-06-23 20:16:25] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:16:27] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:16:29] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:16:31] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:16:33] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:16:35] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:16:37] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:16:39] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:16:41] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:16:43] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:16:45] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:16:48] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:16:50] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:16:52] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:16:54] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:16:56] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:16:58] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:00] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:02] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:04] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:06] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:08] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:10] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:12] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:14] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:17] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:19] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:21] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:23] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:25] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:27] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:29] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:31] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:33] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:35] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:37] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:39] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:41] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:43] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:45] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:47] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:49] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:51] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:54] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:56] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:17:58] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:00] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:02] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:04] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:06] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:08] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:10] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:12] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:14] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:16] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:18] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:20] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:22] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:24] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:27] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:29] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:31] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:33] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:35] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:37] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:39] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:41] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:43] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:45] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:47] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:49] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:51] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:53] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:55] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:57] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:18:59] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:02] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:04] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:06] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:08] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:10] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:12] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:14] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:16] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:18] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:20] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:22] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:24] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:26] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:28] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:30] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:32] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:34] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:37] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:39] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:41] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:43] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:44] [INFO    ] [root                          ] Logging initialized | level=INFO file=D:\coding\NanoTrade\python\logs\nanotrade.log
+[2026-06-23 20:19:45] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:47] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:49] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:51] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:53] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:55] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:57] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:19:59] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:01] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:03] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:05] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:07] [INFO    ] [root                          ] Logging initialized | level=INFO file=D:\coding\NanoTrade\python\logs\nanotrade.log
+[2026-06-23 20:20:07] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:10] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:12] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:14] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:16] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:18] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:20] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:22] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:24] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:26] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:28] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:30] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:32] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:34] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:36] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:38] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:40] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:42] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:45] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:47] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:49] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:51] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:53] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    try:
+    
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:55] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    try:
+    
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:57] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    try:
+    
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:20:59] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    try:
+    
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:01] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    try:
+    
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:03] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    try:
+    
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:05] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    try:
+    
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:07] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    try:
+    
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:09] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    try:
+    
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:10] [INFO    ] [root                          ] Logging initialized | level=INFO file=D:\coding\NanoTrade\python\logs\nanotrade.log
+[2026-06-23 20:21:10] [INFO    ] [engine_daemon                 ] Consumer group engine_group already exists
+[2026-06-23 20:21:10] [INFO    ] [engine_daemon                 ] Hydrating Matching Engine from database...
+[2026-06-23 20:21:11] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    try:
+    
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:11] [INFO    ] [engine_daemon                 ] Found 19 active orders to hydrate.
+[2026-06-23 20:21:11] [INFO    ] [engine_daemon                 ] Hydration complete.
+[2026-06-23 20:21:11] [INFO    ] [engine_daemon                 ] Starting order consumption loop...
+[2026-06-23 20:21:11] [ERROR   ] [engine_daemon                 ] DEBUG: type(self.redis) = <class 'redis.asyncio.client.Redis'>
+[2026-06-23 20:21:11] [ERROR   ] [engine_daemon                 ] DEBUG: is coroutine? False
+[2026-06-23 20:21:13] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    try:
+    
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:15] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    try:
+    
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:18] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    try:
+    
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:20] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    try:
+    
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:21] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    try:
+    
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:24] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    try:
+    
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:26] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    try:
+    
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:28] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    try:
+    
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:30] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    try:
+    
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:32] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    try:
+    
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:34] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:36] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:38] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:40] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:42] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:44] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:46] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:48] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:50] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:52] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:54] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:56] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:21:59] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:22:01] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:22:03] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:22:05] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:22:07] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:22:09] [ERROR   ] [engine_daemon                 ] Error in stream loop: object list can't be used in 'await' expression
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: object list can't be used in 'await' expression
+[2026-06-23 20:22:42] [INFO    ] [root                          ] Logging initialized | level=INFO file=D:\coding\NanoTrade\python\logs\nanotrade.log
+[2026-06-23 20:22:42] [INFO    ] [engine_daemon                 ] Consumer group engine_group already exists
+[2026-06-23 20:22:42] [INFO    ] [engine_daemon                 ] Hydrating Matching Engine from database...
+[2026-06-23 20:22:43] [INFO    ] [engine_daemon                 ] Found 19 active orders to hydrate.
+[2026-06-23 20:22:43] [INFO    ] [engine_daemon                 ] Hydration complete.
+[2026-06-23 20:22:43] [INFO    ] [engine_daemon                 ] Starting order consumption loop...
+[2026-06-23 20:35:45] [INFO    ] [engine_daemon                 ] Successfully processed and ACKed msg_id=1782227145326-0
+[2026-06-23 20:36:43] [INFO    ] [engine_daemon                 ] Successfully processed and ACKed msg_id=1782227203098-0
+[2026-06-23 20:38:38] [INFO    ] [engine_daemon                 ] Successfully processed and ACKed msg_id=1782227318515-0
+[2026-06-23 20:38:39] [INFO    ] [engine_daemon                 ] Successfully processed and ACKed msg_id=1782227318696-0
+[2026-06-23 20:42:33] [INFO    ] [engine_daemon                 ] Successfully processed and ACKed msg_id=1782227554064-0
+[2026-06-23 20:42:34] [INFO    ] [engine_daemon                 ] Successfully processed and ACKed msg_id=1782227554284-0
+[2026-06-23 20:44:15] [INFO    ] [engine_daemon                 ] Successfully processed and ACKed msg_id=1782227655556-0
+[2026-06-23 20:44:16] [INFO    ] [engine_daemon                 ] Successfully processed and ACKed msg_id=1782227655760-0
+[2026-06-23 20:52:27] [INFO    ] [root                          ] Logging initialized | level=INFO file=D:\coding\NanoTrade\python\logs\nanotrade.log
+[2026-06-23 20:52:27] [INFO    ] [engine_daemon                 ] Consumer group engine_group already exists
+[2026-06-23 20:52:27] [INFO    ] [engine_daemon                 ] Hydrating Matching Engine from database...
+[2026-06-23 20:52:29] [INFO    ] [engine_daemon                 ] Found 0 active orders to hydrate.
+[2026-06-23 20:52:29] [INFO    ] [engine_daemon                 ] Hydration complete.
+[2026-06-23 20:52:29] [INFO    ] [engine_daemon                 ] Starting order consumption loop...
+[2026-06-23 20:52:55] [INFO    ] [engine_daemon                 ] Successfully processed and ACKed msg_id=1782228175326-0
+[2026-06-23 20:52:56] [INFO    ] [engine_daemon                 ] Successfully processed and ACKed msg_id=1782228175537-0
+[2026-06-23 22:15:39] [ERROR   ] [engine_daemon                 ] Error in stream loop: Timeout reading from localhost:6379
+Traceback (most recent call last):
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\asyncio\connection.py", line 755, in read_response
+    response = await self._parser.read_response(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        disable_decoding=disable_decoding, push_request=push_request
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\_parsers\resp3.py", line 185, in read_response
+    response = await self._read_response(
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+        disable_decoding=disable_decoding, push_request=push_request
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\_parsers\resp3.py", line 197, in _read_response
+    raw = await self._readline()
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\_parsers\base.py", line 578, in _readline
+    data = await self._stream.readline()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\ProgramData\anaconda3\Lib\asyncio\streams.py", line 562, in readline
+    line = await self.readuntil(sep)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\ProgramData\anaconda3\Lib\asyncio\streams.py", line 677, in readuntil
+    await self._wait_for_data('readuntil')
+  File "C:\ProgramData\anaconda3\Lib\asyncio\streams.py", line 539, in _wait_for_data
+    await self._waiter
+asyncio.exceptions.CancelledError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\asyncio\connection.py", line 754, in read_response
+    async with async_timeout(read_timeout):
+               ~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\ProgramData\anaconda3\Lib\asyncio\timeouts.py", line 116, in __aexit__
+    raise TimeoutError from exc_val
+TimeoutError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\coding\NanoTrade\python\app\workers\engine_daemon.py", line 117, in run
+    messages = await self.redis.xreadgroup(GROUP_NAME, CONSUMER_NAME, {STREAM_KEY: ">"}, count=10, block=1000)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\commands\core.py", line 7791, in _record_and_return
+    actual_response = await response
+                      ^^^^^^^^^^^^^^
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\asyncio\client.py", line 839, in execute_command
+    result = await conn.retry.call_with_retry(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<5 lines>...
+    )
+    ^
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\asyncio\retry.py", line 81, in call_with_retry
+    raise error
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\asyncio\retry.py", line 69, in call_with_retry
+    return await do()
+           ^^^^^^^^^^
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\asyncio\client.py", line 780, in _send_command_parse_response
+    return await self.parse_response(conn, command_name, **options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\asyncio\client.py", line 881, in parse_response
+    response = await connection.read_response()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Prateek\AppData\Roaming\Python\Python313\site-packages\redis\asyncio\connection.py", line 778, in read_response
+    raise TimeoutError(f"Timeout reading from {host_error}")
+redis.exceptions.TimeoutError: Timeout reading from localhost:6379
