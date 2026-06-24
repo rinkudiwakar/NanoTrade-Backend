@@ -89,7 +89,7 @@ def run_market_simulator():
             reference_price = 5594500.0  # Default Fallback
             try:
                 # Try fetching from REST API as fallback if WebSocket failed or isn't running
-                resp = requests.get("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT", timeout=3)
+                resp = requests.get("https://api.binance.us/api/v3/ticker/price?symbol=BTCUSDT", timeout=3)
                 if resp.status_code == 200:
                     data = resp.json()
                     usd_price = float(data["price"])

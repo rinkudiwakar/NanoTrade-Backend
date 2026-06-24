@@ -13,7 +13,7 @@ logger = get_logger(__name__)
 r = redis.from_url(settings.REDIS_URL, decode_responses=True)
 
 BINANCE_STREAM_URL = (
-    "wss://stream.binance.com:9443/stream?"
+    "wss://stream.binance.us:9443/stream?"
     "streams=btcusdt@ticker/"
     "btcusdt@trade/"
     "btcusdt@kline_1m"
