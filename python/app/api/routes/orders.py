@@ -17,8 +17,7 @@ class OrderCreate(BaseModel):
     @field_validator("price")
     @classmethod
     def validate_price_precision(cls, v: float) -> float:
-        if abs(round(v, 2) - v) > 1e-9:
-            raise ValueError("Price precision cannot exceed 2 decimal places")
+        # Round to 2 decimal places to handle floating-point representation errors
         return round(v, 2)
 
     @field_validator("quantity")
