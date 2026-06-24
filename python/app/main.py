@@ -6,16 +6,18 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.routes import auth, market, orders, portfolio
 from app.core.config import _assert_required_secrets, settings
-from app.core.logger import get_logger
+from app.core.logger import get_logger, setup_logging
 from app.websocket.manager import manager, redis_pubsub_listener
 
 logger = get_logger(__name__)
-
 
 # Lifecycle context manager for startup and shutdown events
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # ── Startup ───────────────────────────────────────────────────────────────
+    # Initialize logging
+    setup_logging(log_level=settings.LOG_LEVEL)
+    
     # Abort immediately if any required secret is missing or is a placeholder.
     # This prevents the server from running with invalid / leaked credentials.
     _assert_required_secrets(settings)
