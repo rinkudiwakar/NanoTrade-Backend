@@ -66,7 +66,7 @@ def run_binance_feed():
 
     # 1. Fetch initial price via REST to avoid waiting for the first WS tick
     try:
-        resp = requests.get("https://api.binance.us/api/v3/ticker/price?symbol=BTCUSDT", timeout=5)
+        resp = requests.get("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT", timeout=5)
         if resp.status_code == 200:
             usd_price = float(resp.json()["price"])
             rate_str = r.get(settings.REDIS_KEY_USD_INR_RATE)
@@ -79,8 +79,8 @@ def run_binance_feed():
 
     async def listen():
         nonlocal tick_count
-        # Use Binance.US @ticker stream (updates every 1s regardless of trade volume)
-        url = "wss://stream.binance.us:9443/ws/btcusdt@ticker"
+        # Use global Binance @ticker stream (updates every 1s regardless of trade volume)
+        url = "wss://stream.binance.com:9443/ws/btcusdt@ticker"
         logger.info(f"[Binance] Connecting to WebSocket | url={url}")
         async with websockets.connect(url) as ws:
             logger.info("[Binance] WebSocket connected")
