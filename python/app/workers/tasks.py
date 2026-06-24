@@ -57,24 +57,37 @@ def run_fx_converter():
 def run_binance_feed():
     """
     Long-running daemon task subscribing to public Binance WebSocket feed
-    for BTC/USDT trades, converting USD to INR using the cached FX rate,
+    for BTC/USDT. Converts USD to INR using the cached FX rate,
     and storing the reference price in Redis.
     """
     logger.info("[Binance] Binance feed task started")
     r = redis.from_url(settings.REDIS_URL, decode_responses=True)
     tick_count = 0
 
+    # 1. Fetch initial price via REST to avoid waiting for the first WS tick
+    try:
+        resp = requests.get("https://api.binance.us/api/v3/ticker/price?symbol=BTCUSDT", timeout=5)
+        if resp.status_code == 200:
+            usd_price = float(resp.json()["price"])
+            rate_str = r.get(settings.REDIS_KEY_USD_INR_RATE)
+            rate = float(rate_str) if rate_str else 83.5
+            initial_inr = round(usd_price * rate, 2)
+            r.set(settings.REDIS_KEY_REFERENCE_PRICE, str(initial_inr))
+            logger.info(f"[Binance] Initial REST price fetched | usd={usd_price} inr={initial_inr}")
+    except Exception as e:
+        logger.warning(f"[Binance] Failed to fetch initial REST price: {e}")
+
     async def listen():
         nonlocal tick_count
-        # Use Binance.US to avoid HTTP 451 (Geo-blocking) from US-based Railway servers
-        url = "wss://stream.binance.us:9443/ws/btcusdt@trade"
+        # Use Binance.US @ticker stream (updates every 1s regardless of trade volume)
+        url = "wss://stream.binance.us:9443/ws/btcusdt@ticker"
         logger.info(f"[Binance] Connecting to WebSocket | url={url}")
         async with websockets.connect(url) as ws:
             logger.info("[Binance] WebSocket connected")
             while True:
                 msg = await ws.recv()
                 data = json.loads(msg)
-                usd_price_str = data.get("p")  # 'p' is the trade price
+                usd_price_str = data.get("c")  # 'c' is the current close price in @ticker
                 if usd_price_str:
                     usd_price = float(usd_price_str)
 
@@ -89,7 +102,7 @@ def run_binance_feed():
                     r.set(settings.REDIS_KEY_REFERENCE_PRICE, str(reference_price_inr))
 
                     tick_count += 1
-                    # Log every 50 ticks to avoid flooding (Binance sends ~2 ticks/sec)
+                    # Log every 50 ticks to avoid flooding
                     if tick_count % 50 == 1:
                         logger.info(
                             f"[Binance] Price tick | usd={usd_price} rate={rate} inr={reference_price_inr} ticks={tick_count}"
