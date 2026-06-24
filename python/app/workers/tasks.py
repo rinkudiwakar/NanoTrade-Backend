@@ -86,10 +86,23 @@ def run_market_simulator():
         # 1. Fetch current Binance reference price (INR) from Redis
         price_str = r.get("price:btc_inr")
         if not price_str:
-            reference_price = 5594500.0  # Fallback: ~67,000 USD * 83.5 INR/USD
-            logger.warning(
-                f"[Simulator] No reference price in Redis — using fallback ₹{reference_price:,.2f}"
-            )
+            reference_price = 5594500.0  # Default Fallback
+            try:
+                # Try fetching from REST API as fallback if WebSocket failed or isn't running
+                resp = requests.get("https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT", timeout=3)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    usd_price = float(data["price"])
+                    rate_str = r.get(settings.REDIS_KEY_USD_INR_RATE)
+                    rate = float(rate_str) if rate_str else 83.5
+                    reference_price = round(usd_price * rate, 2)
+                    logger.info(f"[Simulator] Using REST API fallback reference price: ₹{reference_price:,.2f}")
+                    # Briefly cache it to avoid spamming REST API on every tick
+                    r.set("price:btc_inr", str(reference_price), ex=10)
+            except Exception as e:
+                logger.warning(
+                    f"[Simulator] No reference price in Redis and REST failed ({e}) — using hard fallback ₹{reference_price:,.2f}"
+                )
         else:
             reference_price = float(price_str)
 
