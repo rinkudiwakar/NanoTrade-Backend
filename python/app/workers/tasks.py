@@ -66,7 +66,8 @@ def run_binance_feed():
 
     async def listen():
         nonlocal tick_count
-        url = "wss://stream.binance.com:9443/ws/btcusdt@trade"
+        # Use Binance.US to avoid HTTP 451 (Geo-blocking) from US-based Railway servers
+        url = "wss://stream.binance.us:9443/ws/btcusdt@trade"
         logger.info(f"[Binance] Connecting to WebSocket | url={url}")
         async with websockets.connect(url) as ws:
             logger.info("[Binance] WebSocket connected")
@@ -133,7 +134,7 @@ def run_market_simulator():
 
     logger.info("[Simulator] Market simulator task started")
     r = redis.from_url(settings.REDIS_URL, decode_responses=True)
-    api_url = f"http://{settings.HOST}:{settings.PORT}/orders/simulator"
+    api_url = f"{settings.API_URL}/orders/simulator"
     simulator_secret = settings.SIMULATOR_SECRET
     tick_count = 0
 

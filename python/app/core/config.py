@@ -52,6 +52,7 @@ class Settings(BaseSettings):
     # ── Server ─────────────────────────────
     HOST: str = "127.0.0.1"
     PORT: int = 8000
+    API_URL: str = "http://127.0.0.1:8000"
 
     # ── CORS ───────────────────────────────
     CORS_ORIGINS: str = ""
