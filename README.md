@@ -1,5 +1,10 @@
 # NanoTrade — Real-Time Crypto Paper Trading Platform
 
+> **Backend Repository**  
+> This repository contains the backend, matching engine, market simulation, database integration, and real-time infrastructure for NanoTrade.
+>
+> **Frontend:** [View NanoTrade Frontend Repository →](https://github.com/rinkudiwakar/NanoTrade)
+
 NanoTrade is a **high-performance crypto paper trading platform** that simulates a real exchange environment using a custom-built **C++ matching engine**, real-time price anchoring, and intelligent market simulation.
 
 > Practice trading, test strategies, and understand market behavior — without risking real money.
@@ -8,34 +13,40 @@ NanoTrade is a **high-performance crypto paper trading platform** that simulates
 
 ## 🧠 Key Highlights
 
-* ⚡ **C++ Matching Engine** (Low-latency, price-time priority)
-* 🔄 **Real-Time Trading System** (WebSocket updates)
-* 🤖 **Market Simulator** (Bots + liquidity generation)
-* 💰 **Paper Trading with Virtual INR Balance**
-* 📊 **Order Book + Trade Execution**
-* 🧪 **Strategy-ready architecture**
-* 🇮🇳 **INR-based pricing (India-focused)**
+- ⚡ **C++ Matching Engine** (Low-latency, price-time priority)
+- 🔄 **Real-Time Trading System** (WebSocket updates)
+- 🤖 **Market Simulator** (Bots + liquidity generation)
+- 💰 **Paper Trading with Virtual INR Balance**
+- 📊 **Order Book + Trade Execution**
+- 🧪 **Strategy-ready architecture**
+- 🇮🇳 **INR-based pricing (India-focused)**
 
 ---
 
 ## 🏗️ Architecture
 
 ```text
-Frontend (React)
-        ↓
-FastAPI Backend
-        ↓
-C++ Matching Engine (pybind11)
-        ↓
-Supabase (Auth + DB)
-        ↓
-Redis (Pub/Sub + Realtime)
-        ↓
-Celery (Simulator + Background Jobs)
+                    NanoTrade
+                        │
+             ┌──────────┴──────────┐
+             │                     │
+        React Frontend         FastAPI Backend
+             │                     │
+             │              C++ Matching Engine
+             │                  (pybind11)
+             │                     │
+             │              ┌──────┴──────┐
+             │              │             │
+             │          Supabase        Redis
+             │          Auth + DB    Pub/Sub + Realtime
+             │                            │
+             │                         Celery
+             │                    Background Jobs
+             │
+             └──── WebSocket / REST ─────┘
+
+
 ```
-
----
-
 ## 💡 How It Works
 
 ### 🔹 Price System
@@ -116,9 +127,16 @@ Celery (Simulator + Background Jobs)
 ## ⚙️ Setup Instructions
 
 ### 1. Clone Repository
+## For Backend
 
 ```bash
-git clone https://github.com/your-username/nanotrade.git
+git clone https://github.com/rinkudiwakar/NanoTrade-Backend.git
+cd nanotrade-backend
+```
+## For Frontend
+
+```bash
+git clone https://github.com/rinkudiwakar/NanoTrade.git
 cd nanotrade
 ```
 
