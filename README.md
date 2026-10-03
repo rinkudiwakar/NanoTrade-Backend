@@ -202,7 +202,9 @@ sequenceDiagram
   * **Idempotency:** Inserts trade record with `ON CONFLICT (id) DO NOTHING`. If already processed, it exits immediately, preventing double balance debits.
   * **Buyer Wallet:** Deducts `price * quantity` INR.
   * **Buyer Portfolio:** Upserts BTC holding, calculating the exact volume-weighted average price:
-    $$\text{AvgPrice}_{\text{new}} = \frac{(\text{Qty}_{\text{old}} \times \text{AvgPrice}_{\text{old}}) + (\text{Qty}_{\text{trade}} \times \text{Price}_{\text{trade}})}{\text{Qty}_{\text{old}} + \text{Qty}_{\text{trade}}}$$
+    ```math
+    \text{AvgPrice}_{\text{new}} = \frac{(\text{Qty}_{\text{old}} \times \text{AvgPrice}_{\text{old}}) + (\text{Qty}_{\text{trade}} \times \text{Price}_{\text{trade}})}{\text{Qty}_{\text{old}} + \text{Qty}_{\text{trade}}}
+    ```
   * **Seller Wallet:** Credits `price * quantity` INR.
   * **Seller Portfolio:** Decrements BTC holding (deletes row if zero).
 
