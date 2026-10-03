@@ -1,6 +1,5 @@
 # ⚡ NanoTrade Backend — High-Performance Crypto Matching Engine & Trading Core
 
-<<<<<<< HEAD
 <p align="center">
   <img src="https://img.shields.io/badge/C++17-%2300599C.svg?style=for-the-badge&logo=c%2B%2B&logoColor=white" alt="C++17" />
   <img src="https://img.shields.io/badge/Python_3.11-%233776AB.svg?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.11" />
@@ -12,40 +11,25 @@
   <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
   <img src="https://img.shields.io/badge/CMake-064F8C?style=for-the-badge&logo=cmake&logoColor=white" alt="CMake" />
 </p>
-=======
-> **Backend Repository**  
-> This repository contains the backend, matching engine, market simulation, database integration, and real-time infrastructure for NanoTrade.
->
-> **Frontend:** [View NanoTrade Frontend Repository →](https://github.com/rinkudiwakar/NanoTrade)
 
-NanoTrade is a **high-performance crypto paper trading platform** that simulates a real exchange environment using a custom-built **C++ matching engine**, real-time price anchoring, and intelligent market simulation.
-
-> Practice trading, test strategies, and understand market behavior — without risking real money.
->>>>>>> 0b5227cafefa7307ae126651d023479ce7bd69f5
+> **Backend Core Repository**  
+> This repository contains the ultra-low latency matching engine, asynchronous API gateway, market simulator bots, database models, and real-time infrastructure for NanoTrade.  
+> 
+> 🌐 **Frontend Terminal Repository:** [NanoTrade Frontend Terminal (React 18 + TS) →](https://github.com/rinkudiwakar/NanoTrade)
 
 ---
 
 ## 📌 Executive Overview
 
-<<<<<<< HEAD
 **NanoTrade Backend** is the low-latency execution and real-time data engine powering the NanoTrade crypto paper-trading platform. It bridges ultra-fast native systems programming with modern distributed web architecture:
 
-* **Core Execution:** Custom **C++17 matching engine** implementing strict Price-Time Priority (FIFO) order matching with zero garbage collection pauses.
-* **Zero-Copy Interop:** Bound directly into Python as an in-process native extension using **Pybind11**.
-* **Durable Message Ingestion:** **Redis Streams** with Consumer Groups for guaranteed, at-least-once order processing.
-* **Concurrency Control:** Granular distributed locking on user balances preventing double-spending.
-* **ACID Settlement:** Idempotent **PostgreSQL stored procedures (RPC)** guaranteeing atomic balance and portfolio updates.
-* **Market Microstructure Simulation:** Autonomous **Celery workers** deploying 5 algorithmic bot archetypes to maintain realistic order book depth around live Binance reference prices converted to Indian Rupees (INR).
-* **Real-Time Data Distribution:** High-throughput **Redis Pub/Sub** broadcasting live depth, trades, and candles to clients via **WebSockets**.
-=======
-- ⚡ **C++ Matching Engine** (Low-latency, price-time priority)
-- 🔄 **Real-Time Trading System** (WebSocket updates)
-- 🤖 **Market Simulator** (Bots + liquidity generation)
-- 💰 **Paper Trading with Virtual INR Balance**
-- 📊 **Order Book + Trade Execution**
-- 🧪 **Strategy-ready architecture**
-- 🇮🇳 **INR-based pricing (India-focused)**
->>>>>>> 0b5227cafefa7307ae126651d023479ce7bd69f5
+* ⚡ **Core Execution:** Custom **C++17 matching engine** implementing strict Price-Time Priority (FIFO) order matching with zero garbage collection pauses.
+* 🔗 **Zero-Copy Interop:** Bound directly into Python as an in-process native extension using **Pybind11**.
+* 📨 **Durable Message Ingestion:** **Redis Streams** with Consumer Groups for guaranteed, at-least-once order processing.
+* 🔒 **Concurrency Control:** Granular distributed locking on user balances preventing double-spending.
+* ⚖️ **ACID Settlement:** Idempotent **PostgreSQL stored procedures (RPC)** guaranteeing atomic balance and portfolio updates.
+* 🤖 **Market Microstructure Simulation:** Autonomous **Celery workers** deploying 5 algorithmic bot archetypes to maintain realistic order book depth around live Binance reference prices converted to Indian Rupees (INR).
+* 🔄 **Real-Time Data Distribution:** High-throughput **Redis Pub/Sub** broadcasting live depth, trades, and candles to clients via **WebSockets**.
 
 ---
 
@@ -66,6 +50,7 @@ flowchart TB
         ORDERS_API["POST /orders"]
         PORTFOLIO_API["GET /portfolio & /orders/history"]
         WS_GATEWAY["WebSocket Server (/ws/market)"]
+        MARKET_LISTENER["Binance Price Listener\n(market_data.py)"]
     end
 
     subgraph RedisBroker ["Redis 7 Infrastructure"]
@@ -93,8 +78,11 @@ flowchart TB
         BOTS["5 Bot Archetypes\n(Noise, Momentum, Mean Reversion, Whale, MM)"]
     end
 
-    %% Wiring
-    BINANCE -->|Live Prices| Gateway
+    %% Ingestion
+    BINANCE -->|Live USD Feeds| MARKET_LISTENER
+    MARKET_LISTENER -->|Converted INR Prices| PUBSUB
+
+    %% Client Interactions
     WEB -->|1. Submit Limit/Market Order| ORDERS_API
     ORDERS_API --> AUTH
     ORDERS_API -->|2. Acquire Lock| LOCK
@@ -103,21 +91,25 @@ flowchart TB
     ORDERS_API -->|5. XADD Order| STREAM
     ORDERS_API -->|Release Lock| LOCK
 
+    %% Matching Engine Processing
     STREAM -->|6. XREADGROUP| DAEMON
     DAEMON -->|7. Update Status=PROCESSING| DB_ORDERS
     DAEMON -->|8. Process via C++| PYBIND --> CPP_ENGINE
     CPP_ENGINE -->|9. Matched Trades & Residuals| DAEMON
 
+    %% Settlement
     DAEMON -->|10. Execute Atomic Settlement| RPC
     RPC --> DB_PROFILES
     RPC --> DB_PORTFOLIOS
     RPC --> DB_TRADES
-    DAEMON -->|11. Update Order Status (FILLED/PARTIAL)| DB_ORDERS
+    DAEMON -->|11. Update Order Status| DB_ORDERS
 
+    %% Real-time Fan-out
     DAEMON -->|12. Publish Trades & Depth| PUBSUB
     PUBSUB --> WS_GATEWAY
     WS_GATEWAY -->|13. Real-Time Push| WEB
 
+    %% Simulation Loop
     CELERY --> BOTS
     BOTS -->|Signed Orders (X-Simulator-Secret)| ORDERS_API
 ```
@@ -125,8 +117,6 @@ flowchart TB
 ---
 
 ## 🔄 The Complete Order Lifecycle (From Step 1 to Last Step)
-
-Here is exactly what happens under the hood when a trader places an order:
 
 ```mermaid
 sequenceDiagram
@@ -158,9 +148,7 @@ sequenceDiagram
     Daemon->>DB: UPDATE orders SET status = 'PROCESSING'
     Daemon->>CPP: process_order(Order) via Pybind11
 
-    rect rgb(20, 30, 45)
-        Note over CPP: C++ scans opposite book side (Asks)<br/>Matches using Price-Time Priority (FIFO)<br/>Generates Trade records, updates internal book
-    end
+    Note over CPP: C++ scans opposite book side (Asks)<br/>Matches using Price-Time Priority (FIFO)<br/>Generates Trade records, updates internal book
 
     CPP-->>Daemon: Returns ProcessResult (trades, remaining_qty, fillStatus)
 
@@ -236,10 +224,9 @@ Maintains realistic order book depth by generating synthetic order flow around l
 
 ---
 
-## 📂 Backend Repository Directory Structure
+## 📂 Repository Directory Structure
 
 ```text
-<<<<<<< HEAD
 NanoTrade-backend/
 ├── CMakeLists.txt              # C++17 build definition & Pybind11 compilation config
 ├── Dockerfile                  # Multi-stage container build (C++ compiler + Python runtime)
@@ -277,30 +264,6 @@ NanoTrade-backend/
 ---
 
 ## ⚙️ Environment Variables
-=======
-                    NanoTrade
-                        │
-             ┌──────────┴──────────┐
-             │                     │
-        React Frontend         FastAPI Backend
-             │                     │
-             │              C++ Matching Engine
-             │                  (pybind11)
-             │                     │
-             │              ┌──────┴──────┐
-             │              │             │
-             │          Supabase        Redis
-             │          Auth + DB    Pub/Sub + Realtime
-             │                            │
-             │                         Celery
-             │                    Background Jobs
-             │
-             └──── WebSocket / REST ─────┘
-
-
-```
-## 💡 How It Works
->>>>>>> 0b5227cafefa7307ae126651d023479ce7bd69f5
 
 Create a `.env` file in the root directory (copy from `.env.example`):
 
@@ -318,90 +281,9 @@ SUPABASE_URL="https://your-project.supabase.co"
 SUPABASE_KEY="your-anon-or-service-role-key"
 SUPABASE_JWT_SECRET="your-supabase-jwt-secret"
 
-<<<<<<< HEAD
-# Market Simulator
+# Market Simulator & Conversion
 SIMULATOR_SECRET="your-cryptographic-simulator-secret"
 USD_INR_RATE=90.0
-=======
-1. User places order (BUY/SELL)
-2. Order sent to C++ matching engine
-3. Engine matches against order book
-4. Trades generated
-5. Portfolio updated
-6. Updates broadcast via WebSocket
-
----
-
-### 🔹 Market Simulation
-
-* Synthetic traders generate liquidity
-* Orders placed around reference price
-* Includes:
-
-  * Random traders
-  * Whale behavior
-  * Price clustering
-
----
-
-## 🧰 Tech Stack
-
-| Layer      | Tech                  |
-| ---------- | --------------------- |
-| Engine     | C++                   |
-| Backend    | FastAPI (Python)      |
-| Database   | Supabase (PostgreSQL) |
-| Realtime   | Redis + WebSocket     |
-| Workers    | Celery                |
-| Price Feed | Binance WebSocket     |
-
----
-
-## 📦 Features
-
-* ✅ Limit order trading
-* ✅ Real-time order book
-* ✅ Trade execution engine
-* ✅ Portfolio tracking
-* ✅ PnL calculation
-* ✅ Multi-user support
-* 🔜 Strategy engine
-* 🔜 Leaderboard & gamification
-
----
-
-## 🗄️ Database Design
-
-* `profiles` → user balance
-* `orders` → placed orders
-* `trades` → executed trades
-* `portfolios` → asset holdings
-
----
-
-## 🔐 Authentication
-
-* Powered by Supabase Auth
-* JWT-based authentication
-* Row-Level Security (RLS) enabled
-
----
-
-## ⚙️ Setup Instructions
-
-### 1. Clone Repository
-## For Backend
-
-```bash
-git clone https://github.com/rinkudiwakar/NanoTrade-Backend.git
-cd nanotrade-backend
-```
-## For Frontend
-
-```bash
-git clone https://github.com/rinkudiwakar/NanoTrade.git
-cd nanotrade
->>>>>>> 0b5227cafefa7307ae126651d023479ce7bd69f5
 ```
 
 ---
@@ -414,7 +296,7 @@ NanoTrade includes a production-grade multi-stage Docker build that compiles the
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-username/nanotrade-backend.git
+git clone https://github.com/rinkudiwakar/NanoTrade-Backend.git
 cd nanotrade-backend
 
 # 2. Configure environment
@@ -427,7 +309,7 @@ docker-compose up --build
 
 **Services launched:**
 * **Redis 7:** `localhost:6379`
-* **FastAPI Server:** `http://localhost:8000` (Swagger UI at `/docs`)
+* **FastAPI Server:** `http://localhost:8000` (Swagger interactive docs at `/docs`)
 * **Engine Daemon:** Continuously consumes orders from Redis Streams
 * **Celery Worker:** Generates automated synthetic market depth
 
