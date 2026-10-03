@@ -83,19 +83,20 @@ flowchart TB
     MARKET_LISTENER -->|Converted INR Prices| PUBSUB
 
     %% Client Interactions
-    WEB -->|1. Submit Limit/Market Order| ORDERS_API
+    WEB -->|1. Submit Limit or Market Order| ORDERS_API
     ORDERS_API --> AUTH
     ORDERS_API -->|2. Acquire Lock| LOCK
     ORDERS_API -->|3. Check Margin Liabilities| DB_PROFILES
-    ORDERS_API -->|4. Insert Status=QUEUED| DB_ORDERS
+    ORDERS_API -->|4. Insert Status QUEUED| DB_ORDERS
     ORDERS_API -->|5. XADD Order| STREAM
     ORDERS_API -->|Release Lock| LOCK
 
     %% Matching Engine Processing
     STREAM -->|6. XREADGROUP| DAEMON
-    DAEMON -->|7. Update Status=PROCESSING| DB_ORDERS
-    DAEMON -->|8. Process via C++| PYBIND --> CPP_ENGINE
-    CPP_ENGINE -->|9. Matched Trades & Residuals| DAEMON
+    DAEMON -->|7. Update Status PROCESSING| DB_ORDERS
+    DAEMON -->|8. Process via C++| PYBIND
+    PYBIND --> CPP_ENGINE
+    CPP_ENGINE -->|9. Matched Trades and Residuals| DAEMON
 
     %% Settlement
     DAEMON -->|10. Execute Atomic Settlement| RPC
@@ -105,13 +106,13 @@ flowchart TB
     DAEMON -->|11. Update Order Status| DB_ORDERS
 
     %% Real-time Fan-out
-    DAEMON -->|12. Publish Trades & Depth| PUBSUB
+    DAEMON -->|12. Publish Trades and Depth| PUBSUB
     PUBSUB --> WS_GATEWAY
     WS_GATEWAY -->|13. Real-Time Push| WEB
 
     %% Simulation Loop
     CELERY --> BOTS
-    BOTS -->|Signed Orders (X-Simulator-Secret)| ORDERS_API
+    BOTS -->|Signed Internal Orders| ORDERS_API
 ```
 
 ---
